@@ -1,6 +1,8 @@
 import os
 import csv
 import time
+import pickle
+import json
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -8,16 +10,19 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-def get_workout_links():
+all_links_pickle_path = 'data/all_links.pickle'
+
+def get_workout_links(chromedriver_path):
     """
-    Goes through all (free?) workouts and returns lists of individual workout links
+    Goes through all free workouts and writes list of workout links to pickle file
     """
-    driver = webdriver.Chrome(os.path.abspath('../chromedriver'))
-    driver.get("https://www.fitnessblender.com/videos?exclusive%5B%5D=0")
+    fb_link = "https://www.fitnessblender.com/videos?exclusive%5B%5D=0"
+    driver = webdriver.Chrome(chromedriver_path)
+    driver.get(fb_link)
 
     all_links = []
     for page in range(29):
-        print(page)
+        #print(page)
 
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "contents"))
@@ -31,50 +36,48 @@ def get_workout_links():
         next_btn.click()
     driver.close()
 
-    with open('all_links.pickle', 'wb') as f:
+    # create data folder if it doesn't yet exist
+    dirname = os.path.dirname(all_links_pickle_path)
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+
+    with open(all_links_pickle_path, 'wb') as f:
         pickle.dump([i for j in all_links for i in j if i is not None], f)
 
-    return [i for j in all_links for i in j if i is not None]
 
-
-if __name__ == "__main__":
-    get_workout_links()
-    
-
-def get_data(link):
+def get_data(workout_link):
     """
     Scrapes a workout link and returns dictionary of data, where the keys are column names and values are data values
     """
 
     return {'test1':'a','test2':'b'}
 
+
 def scrape_data():
     """
     Writes data to csv
     """
-    out_path = 'data/fbworkouts.csv'
+    fbworkouts_out_path = 'data/fbworkouts.csv'
     headers = ['test1','test2']
 
-    out_path_exists = os.path.isfile(out_path)
+    # scrape all workout links to all_links.pickle if all_links.pickle doesn't yet exist
+    if not os.path.isfile(all_links_pickle_path):
+        with open('config/chromedriver.json') as fh:
+            chromedriver_path = json.load(fh)['chromedriver_path']
 
-    # create data folder containing csv if it doesn't yet exist
-    dirname = os.path.dirname(out_path)
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
+        get_workout_links(chromedriver_path)
 
-    # get workout links to scrape
-    links = get_workout_links()
 
-    with open(out_path, 'a', newline='') as f:
-        writer = csv.DictWriter(f, headers)
-
-        # write headers if file doesn't yet exist
-        if not out_path_exists:
-            writer.writerow({x:x for x in headers})
-
-        # go through each link and write data to csv
-        for l in links:
-            dct = get_data(l)
-            writer.writerow(dct)
+    # with open(out_path, 'a', newline='') as f:
+    #     writer = csv.DictWriter(f, headers)
+    #
+    #     # write headers if fbworkouts.csv doesn't yet exist
+    #     if not os.path.isfile(fbworkouts_out_path):
+    #         writer.writerow({x:x for x in headers})
+    #
+    #     # go through each link and write data to csv
+    #     for l in links:
+    #         dct = get_data(l)
+    #         writer.writerow(dct)
 
     return

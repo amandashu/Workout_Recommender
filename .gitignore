@@ -1,5 +1,11 @@
+# folders/files
 data/
+config/chromedriver.json
+chromedriver
+
+# pycache
 __pycache__
+/__pycache__
 
 # Jupyter Notebook
 .ipynb_checkpoints
