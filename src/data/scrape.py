@@ -79,13 +79,14 @@ def get_fbdata(workout_link):
     # get html
     html = driver.page_source
     soup = BeautifulSoup(html, "html5lib")
-    driver.close()
 
     # get workout details
     span_details = []
     for span in soup.find_all("span",{"class":"detail-value demi"}):
         if span.find('a'):
             span_details.append(span.find('a').get('href'))
+        elif span.find_previous('span').text == 'Difficulty:':
+            span_details.append(span.text[0])
         else:
             span_details.append(span.text)
 
@@ -106,13 +107,21 @@ def scrape_data():
     fbworkouts_out_path = 'data/fbworkouts.csv'
     comments_out_path = 'data/comments.csv'
 
-    # paths exists
-    fbworkouts_exists = os.path.isfile(fbworkouts_out_path)
-    comments_exists = os.path.isfile(comments_out_path)
-
     # headers
-    fbheaders = ['workout id'] + fbworkout_headers
-    cheaders = ['workout id'] + comment_headers
+    fbheaders = ['workout_id'] + fbworkout_headers
+    cheaders = ['workout_id'] + comment_headers
+
+    # write headers if fbworkouts.csv doesn't yet exist
+    if not os.path.isfile(fbworkouts_out_path):
+        with open(fbworkouts_out_path, 'a', newline='') as f:
+            fbwriter = csv.DictWriter(f, fbheaders)
+            fbwriter.writerow({x:x for x in fbheaders})
+
+    # write headers if comments.csv doesn't yet exist
+    if not os.path.isfile(comments_out_path):
+        with open(comments_out_path, 'a', newline='') as g:
+            cwriter = csv.DictWriter(g, cheaders)
+            cwriter.writerow({x:x for x in cheaders})
 
     # scrape all workout links to all_links.pickle if all_links.pickle doesn't yet exist
     if not os.path.isfile(all_links_pickle_path):
@@ -122,20 +131,12 @@ def scrape_data():
     with open(all_links_pickle_path, 'rb') as file:
         links = pickle.load(file)
 
-    links = links[:1]# testing on just one all_links
+    links = links[:5]
 
     #write data
     with open(fbworkouts_out_path, 'a', newline='') as f, open(comments_out_path, 'a', newline='') as g:
         fbwriter = csv.DictWriter(f, fbheaders)
         cwriter = csv.DictWriter(g, cheaders)
-
-        # write headers if fbworkouts.csv doesn't yet exist
-        if not os.path.isfile(fbworkouts_exists):
-            fbwriter.writerow({x:x for x in fbheaders})
-
-        # write headers if comments.csv doesn't yet exist
-        if not os.path.isfile(comments_exists):
-            cwriter.writerow({x:x for x in cheaders})
 
         #go through each link and write data to both csvs
         for i in range(len(links)):
@@ -144,11 +145,11 @@ def scrape_data():
             dct, df  = get_fbdata(l)
 
             # write details
-            dct['workout id'] = i+1
+            dct['workout_id'] = i+1
             fbwriter.writerow(dct)
 
             # write comments
             df.insert(0, 'movie id', i+1)
             df.to_csv(g, header=False, index=False)
-
+    driver.close()
     return
