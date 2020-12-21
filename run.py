@@ -14,7 +14,11 @@ def main(targets):
     if 'data' in targets:
         with open('config/chromedriver.json') as fh:
             chromedriver_path = json.load(fh)['chromedriver_path']
-        scrape_data(chromedriver_path)
+
+        with open('config/data-params.json') as fh:
+            data_params = json.load(fh)
+            
+        scrape_data(chromedriver_path, **data_params)
 
     return
 

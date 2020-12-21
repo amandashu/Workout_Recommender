@@ -12,11 +12,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 
 # set all_links.pickle path
-all_links_pickle_path = 'data/all_links.pickle'
 fbworkout_headers = ['duration', 'calorie_burn', 'difficulty', 'equipment', 'training_type', 'body_focus', 'youtube_link']
-comment_headers = ['username','comment_time']
+comment_headers = ['username','profile','comment_time']
 
-def get_workout_links(driver):
+def get_workout_links(driver, all_links_pickle_path):
     """
     Goes through all free workouts and writes list of workout links to pickle file
     """
@@ -40,7 +39,7 @@ def get_workout_links(driver):
         pickle.dump([i for j in all_links for i in j if i is not None], f)
 
 
-def get_fbdata(workout_link,driver):
+def get_fbdata(workout_link, driver):
     """
     Scrapes a workout link and returns dictionary of data, where the keys are column names and values are data values
     """
@@ -80,20 +79,35 @@ def get_fbdata(workout_link,driver):
     details_dct = dict(zip([x for x in fbworkout_headers if x!= 'body_focus'], span_details))
     details_dct['body_focus'] = soup.find("span",{"class":"focus demi"}).text
 
-    #TODO implement comment scraping
-    comments_df = pd.DataFrame({'username':['a','b'],
-                                'comment_time': ['3 weeks','4 weeks']})
+    # scrape youtube info
+
+    # comment scraping
+    comments  = soup.find_all("article", {"class":"comment"})
+    usernames = []
+    comment_times = []
+    profiles = []
+    for c in comments:
+        comment_time = c.find("span", {"class":"comment__time"})
+        comment_times.append(comment_time.text[2:].strip())
+        usernames.append(comment_time.previous_sibling.strip())
+
+        p = c.find("aside", {"class":"comment__profile-image"})
+        if p.find('img'):
+            profiles.append(p.find('img')['src'])
+        else:
+            profiles.append(p.find('span').text.strip())
+
+    comments_df = pd.DataFrame({'username':usernames,
+                                'profile': profiles,
+                                'comment_time':comment_times,
+                                })
     return details_dct, comments_df
 
 
-def scrape_data(chromedriver_path):
+def scrape_data(chromedriver_path, all_links_pickle_path, fbworkouts_out_path, comments_out_path):
     """
     Writes data to csv
     """
-
-    # out csv paths
-    fbworkouts_out_path = 'data/fbworkouts.csv'
-    comments_out_path = 'data/comments.csv'
 
     # headers
     fbheaders = ['workout_id'] + fbworkout_headers
@@ -121,16 +135,16 @@ def scrape_data(chromedriver_path):
 
     # scrape all workout links to all_links.pickle if all_links.pickle doesn't yet exist
     if not os.path.isfile(all_links_pickle_path):
-        get_workout_links(driver)
+        get_workout_links(driver, all_links_pickle_path)
 
     # get workout links
     with open(all_links_pickle_path, 'rb') as file:
         links = pickle.load(file)
 
-    links = links[:5]
+    links = links[:2]
 
     #write data
-    with open(fbworkouts_out_path, 'a', newline='') as f, open(comments_out_path, 'a', newline='') as g:
+    with open(fbworkouts_out_path, 'a', newline='') as f, open(comments_out_path, 'a', newline='', encoding="utf-8") as g:
         fbwriter = csv.DictWriter(f, fbheaders)
         cwriter = csv.DictWriter(g, cheaders)
 
