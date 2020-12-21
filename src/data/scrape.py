@@ -104,29 +104,32 @@ def get_fbdata(workout_link, driver):
     return details_dct, comments_df
 
 
-def scrape_data(chromedriver_path, all_links_pickle_path, fbworkouts_out_path, comments_out_path):
+def scrape_data(chromedriver_path, all_links_pickle_path, fbworkouts_path, comments_path):
     """
     Writes data to csv
     """
+    # if fbworkouts.csv and comments.csv exists, don't scrape again
+    if os.path.isfile(fbworkouts_path) and os.path.isfile(comments_path):
+        return
 
     # headers
     fbheaders = ['workout_id'] + fbworkout_headers
     cheaders = ['workout_id'] + comment_headers
 
     # create data folder if it doesn't yet exist
-    dirname = os.path.dirname(fbworkouts_out_path)
+    dirname = os.path.dirname(fbworkouts_path)
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
     # write headers if fbworkouts.csv doesn't yet exist
-    if not os.path.isfile(fbworkouts_out_path):
-        with open(fbworkouts_out_path, 'w', newline='') as f:
+    if not os.path.isfile(fbworkouts_path):
+        with open(fbworkouts_path, 'w', newline='') as f:
             fbwriter = csv.DictWriter(f, fbheaders)
             fbwriter.writerow({x:x for x in fbheaders})
 
     # write headers if comments.csv doesn't yet exist
-    if not os.path.isfile(comments_out_path):
-        with open(comments_out_path, 'w', newline='') as g:
+    if not os.path.isfile(comments_path):
+        with open(comments_path, 'w', newline='') as g:
             cwriter = csv.DictWriter(g, cheaders)
             cwriter.writerow({x:x for x in cheaders})
 
@@ -144,7 +147,7 @@ def scrape_data(chromedriver_path, all_links_pickle_path, fbworkouts_out_path, c
     links = links[:2]
 
     #write data
-    with open(fbworkouts_out_path, 'a', newline='') as f, open(comments_out_path, 'a', newline='', encoding="utf-8") as g:
+    with open(fbworkouts_path, 'a', newline='') as f, open(comments_path, 'a', newline='', encoding="utf-8") as g:
         fbwriter = csv.DictWriter(f, fbheaders)
         cwriter = csv.DictWriter(g, cheaders)
 

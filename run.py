@@ -4,8 +4,9 @@ import json
 sys.path.insert(0, 'src/data')
 sys.path.insert(0, 'src/utils')
 
-from scrape import scrape_data
 from clean import remove_data
+from scrape import scrape_data
+from fbpreprocessing import fb_preprocessing
 
 def main(targets):
     if 'clean' in targets:
@@ -17,8 +18,10 @@ def main(targets):
 
         with open('config/data-params.json') as fh:
             data_params = json.load(fh)
-            
+
         scrape_data(chromedriver_path, **data_params)
+
+        fb_preprocessing(data_params['fbworkouts_path'], data_params['comments_path'])
 
     return
 
