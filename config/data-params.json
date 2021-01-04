@@ -1,5 +1,6 @@
 {
   "all_links_pickle_path": "data/all_links.pickle",
   "fbworkouts_path" : "data/fbworkouts.csv",
-  "comments_path": "data/comments.csv"
+  "comments_path": "data/comments.csv",
+  "fbcommenters": "data/fbcommenters.csv"
 }

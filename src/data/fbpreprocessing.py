@@ -8,7 +8,7 @@ def clean_fbworkouts(fbworkouts_path):
     """
     return
 
-def create_fbcommenters(comments_path):
+def create_fbcommenters(comments_path, fbcommenters_path):
     """
     Takes in comments.csv and outputs fbcommenters.csv, which assigns id to each
     username-profile combination
@@ -18,8 +18,8 @@ def create_fbcommenters(comments_path):
     comments_df['user_id'] = np.arange(1, comments_df.shape[0] + 1)
 
     dirname = os.path.dirname(comments_path)
-    comments_df.to_csv(dirname+ '/fbcommenters.csv', index=False)
+    comments_df.to_csv(fbcommenters_path, index=False)
 
-def fb_preprocessing(fbworkouts_path, comments_path):
+def fb_preprocessing(fbworkouts_path, comments_path, fbcommenters_path):
     clean_fbworkouts(fbworkouts_path)
-    create_fbcommenters(comments_path)
+    create_fbcommenters(comments_path, fbcommenters_path)
