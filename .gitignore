@@ -1,5 +1,6 @@
 # folders/files
-data/
+debug.log
+/data/
 config/chromedriver.json
 chromedriver
 
