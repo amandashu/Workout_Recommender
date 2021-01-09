@@ -62,6 +62,7 @@ def get_fbdata(workout_link, driver):
                     (By.XPATH, "//button[contains(text(), 'Load More Comments')]")
                     )).click()
             driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
+            time.sleep(3)
         except Exception as e:
             break
 
@@ -92,7 +93,10 @@ def get_fbdata(workout_link, driver):
     hashes = []
     for c in comments:
         comment_time = c.find("span", {"class":"comment__time"})
-        comment_times.append(comment_time.text[2:].strip())
+        if comment_time != None:
+            comment_times.append(comment_time.text[2:].strip())
+        else:
+            comment_times.append(None)
         usernames.append(comment_time.previous_sibling.strip())
 
         p = c.find("aside", {"class":"comment__profile-image"})
@@ -152,7 +156,7 @@ def scrape_data(chromedriver_path, all_links_pickle_path, fbworkouts_path, comme
     with open(all_links_pickle_path, 'rb') as file:
         links = pickle.load(file)
 
-    links = links[:2]
+    #links = links[:2]
 
     #write data
     with open(fbworkouts_path, 'a', newline='') as f, open(comments_path, 'a', newline='', encoding="utf-8") as g:
@@ -172,5 +176,6 @@ def scrape_data(chromedriver_path, all_links_pickle_path, fbworkouts_path, comme
             # write comments
             df.insert(0, 'movie id', i+1)
             df.to_csv(g, header=False, index=False)
+            time.sleep(5)
     driver.close()
     return
