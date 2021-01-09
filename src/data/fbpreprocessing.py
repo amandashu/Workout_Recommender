@@ -11,9 +11,9 @@ def clean_fbworkouts(fbworkouts_path):
 def create_fbcommenters(comments_path, fbcommenters_path):
     """
     Takes in comments.csv and outputs fbcommenters.csv, which assigns id to each
-    username-profile combination
+    hash_id-profile combination
     """
-    comments_df = pd.read_csv(comments_path, usecols=['username','profile'])
+    comments_df = pd.read_csv(comments_path, usecols=['hash_id','profile'])
     comments_df = comments_df.drop_duplicates()
     comments_df['user_id'] = np.arange(1, comments_df.shape[0] + 1)
 

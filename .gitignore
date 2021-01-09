@@ -3,6 +3,8 @@ debug.log
 /data/
 config/chromedriver.json
 chromedriver
+.vscode/
+*.pyc
 
 # pycache
 __pycache__

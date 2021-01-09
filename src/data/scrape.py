@@ -10,10 +10,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
+import hashlib
 
 # set all_links.pickle path
 fbworkout_headers = ['duration', 'calorie_burn', 'difficulty', 'equipment', 'training_type', 'body_focus', 'youtube_link']
-comment_headers = ['username','profile','comment_time']
+comment_headers = ['username', 'profile', 'hash_id', 'comment_time']
 
 def get_workout_links(driver, all_links_pickle_path):
     """
@@ -28,7 +29,7 @@ def get_workout_links(driver, all_links_pickle_path):
             EC.presence_of_element_located((By.CLASS_NAME, "contents"))
         )
 
-        time.sleep(2)
+        #time.sleep(2)
         links = [content.get_attribute('href') for content in driver.find_elements_by_class_name('contents') if content.get_attribute('href') != None]
         all_links.append(links)
 
@@ -45,7 +46,9 @@ def get_fbdata(workout_link, driver):
     """
     # load the page
     driver.get(workout_link)
-    time.sleep(5)
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, "comments"))
+    )
 
     # scroll down to load comments
     comments = driver.find_element_by_id("comments")
@@ -86,6 +89,7 @@ def get_fbdata(workout_link, driver):
     usernames = []
     comment_times = []
     profiles = []
+    hashes = []
     for c in comments:
         comment_time = c.find("span", {"class":"comment__time"})
         comment_times.append(comment_time.text[2:].strip())
@@ -97,8 +101,12 @@ def get_fbdata(workout_link, driver):
         else:
             profiles.append(p.find('span').text.strip())
 
+        hash_object = hashlib.md5((usernames[-1] + profiles[-1]).encode())
+        hashes.append(hash_object.hexdigest())
+
     comments_df = pd.DataFrame({'username':usernames,
                                 'profile': profiles,
+                                'hash': hashes,
                                 'comment_time':comment_times,
                                 })
     return details_dct, comments_df

@@ -11,6 +11,7 @@ from fbpreprocessing import fb_preprocessing
 def main(targets):
     if 'clean' in targets:
         remove_data()
+        print("Data cleaned.")
 
     if 'data' in targets:
         with open('config/chromedriver.json') as fh:
@@ -19,11 +20,16 @@ def main(targets):
         with open('config/data-params.json') as fh:
             data_params = json.load(fh)
 
-        scrape_data(chromedriver_path, data_params['all_links_pickle_path'], data_params['fbworkouts_path'], data_params['comments_path'])
+        print("Scraping data...")
+        scrape_data(chromedriver_path, data_params['all_links_pickle_path'],
+                    data_params['fbworkouts_path'], data_params['comments_path'])
 
-        fb_preprocessing(data_params['fbworkouts_path'], data_params['comments_path'], data_params['fbcommenters'])
+        print("Preprocessing...")
+        fb_preprocessing(data_params['fbworkouts_path'],
+                         data_params['comments_path'], data_params['fbcommenters'])
 
     return
+
 
 if __name__ == '__main__':
     targets = sys.argv[1:]
