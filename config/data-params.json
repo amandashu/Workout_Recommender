@@ -4,5 +4,5 @@
   "fbworkouts_clean_path" : "data/fbworkouts_clean.csv",
   "comments_path": "data/comments.csv",
   "fbcommenters": "data/fbcommenters.csv",
-  "user_item_matrix_path": "data/user_item_interactions.csv"
+  "user_item_interactions_path": "data/user_item_interactions.csv"
 }

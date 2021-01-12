@@ -37,11 +37,11 @@ def clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path):
     ## asserts that the categories are regular and contains no errors or miscategorizations
     #flatten = lambda t: [item for sublist in t for item in sublist]
     #assert set(flatten(workouts_df.body_focus.tolist())) == {'UpperBody', 'TotalBody', 'LowerBody', 'Core'}
-    #assert set(flatten(workouts_df.training_type.tolist())) == {'Pilates', 'Plyometric', 
-    #    'Toning', 'Kettlebell', 'Barre', 'Low Impact', 'Strength Training', 'Cardiovascular', 
+    #assert set(flatten(workouts_df.training_type.tolist())) == {'Pilates', 'Plyometric',
+    #    'Toning', 'Kettlebell', 'Barre', 'Low Impact', 'Strength Training', 'Cardiovascular',
     #    'Warm UpCool Down', 'StretchingFlexibility', 'BalanceAgility', 'HIIT'}
-    #assert set(flatten(workouts_df.equipment.tolist())) == {'Bench', 'PhysioBall', 'Kettlebell', 'Mat', 
-    #    'Aerobics Step', 'No Equipment', 'Exercise Band', 'Sandbag', 
+    #assert set(flatten(workouts_df.equipment.tolist())) == {'Bench', 'PhysioBall', 'Kettlebell', 'Mat',
+    #    'Aerobics Step', 'No Equipment', 'Exercise Band', 'Sandbag',
     #    'Barbell', 'Dumbbell', 'Stationary Bike', 'Jump Rope', 'Medicine Ball'}
 
     # OHE Encoder Function
@@ -62,31 +62,42 @@ def clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path):
     # there is both a workout type and equipment named kettlebell, meaning that there will be overlap
     # therefore, we dropped the kettlebell from the "training_type", since you won't be doing
     # kettlebell exercises without the kettlebell; kettlebell will be encoded in the equipment section
-    workouts_df = workouts_df.drop(['Kettlebell'], axis=1) 
+    workouts_df = workouts_df.drop(['Kettlebell'], axis=1)
     workouts_df = OHEListEncoder(workouts_df, 'equipment')
 
     workouts_df.to_csv(fbworkouts_clean_path, index=False)
 
+
 def create_fbcommenters(comments_path, fbcommenters_path):
     """
     Takes in comments.csv and outputs fbcommenters.csv, which assigns id to each
-    hash_id-profile combination
+    hash_id-profile combination.
+
+    Note: only fbcommenters who commented at least 5 times are kept
     """
     comments_df = pd.read_csv(comments_path, usecols=['hash_id'])
-    comments_df = comments_df.drop_duplicates()
-    comments_df['user_id'] = np.arange(1, comments_df.shape[0] + 1)
+    counts= comments_df.groupby('hash_id').size()
+    more_than_five = counts[counts>=5].index
 
-    dirname = os.path.dirname(comments_path)
-    comments_df.to_csv(fbcommenters_path, index=False)
+    dct = {
+        'hash_id': more_than_five,
+        'user_id': np.arange(1, len(more_than_five) + 1)
+    }
 
-def create_UI_interactions(comments_path, fbcommenters_path, user_item_matrix_path):
-    comments_df = pd.read_csv(comments_path, usecols=['hash_id', 'workout_id'])
+    out = pd.DataFrame(dct)
+    out.to_csv(fbcommenters_path, index=False)
+
+def create_UI_interactions(comments_path, fbcommenters_path, user_item_interactions_path):
+    """
+    Outputs user_item_interactinos.csv, containing columns user_id and workout_id
+    """
+    comments_df = pd.read_csv(comments_path, usecols=['hash_id', 'workout_id']).drop_duplicates() # some users might comment twice on the same video
     fbcommenters_df = pd.read_csv(fbcommenters_path)
     merged_df = pd.merge(comments_df, fbcommenters_df, on="hash_id", how='inner')
     interactions_df = merged_df[['user_id','workout_id']]
-    interactions_df.to_csv(user_item_matrix_path, index=False)
+    interactions_df.to_csv(user_item_interactions_path, index=False)
 
-def fb_preprocessing(fbworkouts_path, fbworkouts_clean_path, comments_path, fbcommenters_path, user_item_matrix_path):
+def fb_preprocessing(fbworkouts_path, fbworkouts_clean_path, comments_path, fbcommenters_path, user_item_interactions_path):
     clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path)
     create_fbcommenters(comments_path, fbcommenters_path)
-    create_UI_interactions(comments_path, fbcommenters_path, user_item_matrix_path)
+    create_UI_interactions(comments_path, fbcommenters_path, user_item_interactions_path)
