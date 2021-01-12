@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 app = Flask(__name__)
 
-# dummary_data
+# dummy_data
 data = [
     {
         'name': "Daniel's Upper Body...",

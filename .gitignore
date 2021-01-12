@@ -5,6 +5,7 @@ config/chromedriver.json
 chromedriver
 .vscode/
 *.pyc
+notebook/test.ipynb
 
 # pycache
 __pycache__
