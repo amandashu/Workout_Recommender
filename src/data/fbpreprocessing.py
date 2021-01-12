@@ -87,7 +87,7 @@ def create_fbcommenters(comments_path, fbcommenters_path):
     out = pd.DataFrame(dct)
     out.to_csv(fbcommenters_path, index=False)
 
-def create_UI_interactions(comments_path, fbcommenters_path, user_item_matrix_path):
+def create_UI_interactions(comments_path, fbcommenters_path, user_item_interactions_path):
     """
     Outputs user_item_interactinos.csv, containing columns user_id and workout_id
     """
@@ -95,9 +95,9 @@ def create_UI_interactions(comments_path, fbcommenters_path, user_item_matrix_pa
     fbcommenters_df = pd.read_csv(fbcommenters_path)
     merged_df = pd.merge(comments_df, fbcommenters_df, on="hash_id", how='inner')
     interactions_df = merged_df[['user_id','workout_id']]
-    interactions_df.to_csv(user_item_matrix_path, index=False)
+    interactions_df.to_csv(user_item_interactions_path, index=False)
 
-def fb_preprocessing(fbworkouts_path, fbworkouts_clean_path, comments_path, fbcommenters_path, user_item_matrix_path):
+def fb_preprocessing(fbworkouts_path, fbworkouts_clean_path, comments_path, fbcommenters_path, user_item_interactions_path):
     clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path)
     create_fbcommenters(comments_path, fbcommenters_path)
-    create_UI_interactions(comments_path, fbcommenters_path, user_item_matrix_path)
+    create_UI_interactions(comments_path, fbcommenters_path, user_item_interactions_path)
