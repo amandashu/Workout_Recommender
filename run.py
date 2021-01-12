@@ -7,6 +7,7 @@ sys.path.insert(0, 'src/utils')
 from clean import remove_data
 from scrape import scrape_data
 from fbpreprocessing import fb_preprocessing
+from train import build_interactions
 
 def main(targets):
     if 'clean' in targets:
@@ -25,9 +26,20 @@ def main(targets):
                     data_params['fbworkouts_path'], data_params['comments_path'])
 
         print("Preprocessing...")
-        fb_preprocessing(data_params['fbworkouts_path'],
-                         data_params['comments_path'], data_params['fbcommenters'])
+        fb_preprocessing(
+            fbworkouts_path = data_params['fbworkouts_path'], 
+            fbworkouts_clean_path = data_params['fbworkouts_clean_path'],
+            comments_path = data_params['comments_path'], 
+            fbcommenters_path = data_params['fbcommenters'], 
+            user_item_matrix_path = data_params['user_item_matrix_path']
+            )
 
+    if 'train' in targets:
+        with open('config/data-params.json') as fh:
+            data_params = json.load(fh)
+
+        build_interactions(data_params['user_item_matrix_path'], data_params['fbworkouts_clean_path'])
+        
     return
 
 

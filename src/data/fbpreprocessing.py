@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 
-def clean_fbworkouts(fbworkouts_path):
+def clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path):
     """
     Takes in fbworkouts.csv and outputs fbworkouts_clean.csv
     """
@@ -14,6 +14,10 @@ def clean_fbworkouts(fbworkouts_path):
     workouts_df.duration = duration.astype(int)
 
     def strip_special_chars_and_split(df, col):
+        """
+        This will clean up a given column in a dataframe inplace, and will remove
+        any character that is not alphanumerical, a comma, or a slash
+        """
         stripped_column = df[col].str.replace('[^a-zA-Z0-9/, ]', '', regex=True)
         df[col] = stripped_column.str.split(', ')
         return df
@@ -23,7 +27,14 @@ def clean_fbworkouts(fbworkouts_path):
     strip_special_chars_and_split(workouts_df, 'training_type')
     strip_special_chars_and_split(workouts_df, 'equipment')
 
-    ## check to see that 
+
+    # converts the calories burned from a range to a numerical mean
+    duration = workouts_df.calorie_burn.str.split('-')
+    duration = duration.apply(lambda x: (float(x[0]) + float(x[1])) / 2)
+    workouts_df.calorie_burn = duration
+    workouts_df = workouts_df.rename(columns={"calorie_burn": "mean_calorie_burn"})
+
+    ## asserts that the categories are regular and contains no errors or miscategorizations
     #flatten = lambda t: [item for sublist in t for item in sublist]
     #assert set(flatten(workouts_df.body_focus.tolist())) == {'UpperBody', 'TotalBody', 'LowerBody', 'Core'}
     #assert set(flatten(workouts_df.training_type.tolist())) == {'Pilates', 'Plyometric', 
@@ -54,9 +65,7 @@ def clean_fbworkouts(fbworkouts_path):
     workouts_df = workouts_df.drop(['Kettlebell'], axis=1) 
     workouts_df = OHEListEncoder(workouts_df, 'equipment')
 
-    print(workouts_df.columns)
-    print(workouts_df.head())
-    return
+    workouts_df.to_csv(fbworkouts_clean_path, index=False)
 
 def create_fbcommenters(comments_path, fbcommenters_path):
     """
@@ -70,6 +79,14 @@ def create_fbcommenters(comments_path, fbcommenters_path):
     dirname = os.path.dirname(comments_path)
     comments_df.to_csv(fbcommenters_path, index=False)
 
-def fb_preprocessing(fbworkouts_path, comments_path, fbcommenters_path):
-    clean_fbworkouts(fbworkouts_path)
+def create_UI_interactions(comments_path, fbcommenters_path, user_item_matrix_path):
+    comments_df = pd.read_csv(comments_path, usecols=['hash_id', 'workout_id'])
+    fbcommenters_df = pd.read_csv(fbcommenters_path)
+    merged_df = pd.merge(comments_df, fbcommenters_df, on="hash_id", how='inner')
+    interactions_df = merged_df[['user_id','workout_id']]
+    interactions_df.to_csv(user_item_matrix_path, index=False)
+
+def fb_preprocessing(fbworkouts_path, fbworkouts_clean_path, comments_path, fbcommenters_path, user_item_matrix_path):
+    clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path)
     create_fbcommenters(comments_path, fbcommenters_path)
+    create_UI_interactions(comments_path, fbcommenters_path, user_item_matrix_path)
