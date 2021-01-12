@@ -4,6 +4,7 @@ import time
 import pickle
 import json
 import pandas as pd
+from sys import platform
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -29,7 +30,7 @@ def get_workout_links(driver, all_links_pickle_path):
             EC.presence_of_element_located((By.CLASS_NAME, "contents"))
         )
 
-        #time.sleep(2)
+        time.sleep(2)
         links = [content.get_attribute('href') for content in driver.find_elements_by_class_name('contents') if content.get_attribute('href') != None]
         all_links.append(links)
 
@@ -68,7 +69,8 @@ def get_fbdata(workout_link, driver):
 
     # get html
     html = driver.page_source
-    soup = BeautifulSoup(html, "html5lib")
+    #soup = BeautifulSoup(html, "html5lib")
+    soup = BeautifulSoup(html, "lxml")
 
     # get workout details
     span_details = []
