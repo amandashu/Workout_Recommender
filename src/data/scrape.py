@@ -4,7 +4,6 @@ import time
 import pickle
 import json
 import pandas as pd
-from sys import platform
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -41,7 +40,7 @@ def get_workout_links(driver, all_links_pickle_path):
         pickle.dump([i for j in all_links for i in j if i is not None], f)
 
 
-def get_fbdata(workout_link, driver):
+def get_fbdata(workout_link, driver, parser='html5lib'):
     """
     Scrapes a workout link and returns dictionary of data, where the keys are column names and values are data values
     """
@@ -69,8 +68,7 @@ def get_fbdata(workout_link, driver):
 
     # get html
     html = driver.page_source
-    #soup = BeautifulSoup(html, "html5lib")
-    soup = BeautifulSoup(html, "lxml")
+    soup = BeautifulSoup(html, parser)
 
     # get workout details
     span_details = []
@@ -149,6 +147,7 @@ def scrape_data(chromedriver_path, all_links_pickle_path, fbworkouts_path, comme
 
     #driver variable
     driver = webdriver.Chrome(chromedriver_path)
+    parser = 'html5lib' # alternative "lxml", use this if you get a parser error
 
     # scrape all workout links to all_links.pickle if all_links.pickle doesn't yet exist
     if not os.path.isfile(all_links_pickle_path):
@@ -169,7 +168,7 @@ def scrape_data(chromedriver_path, all_links_pickle_path, fbworkouts_path, comme
         for i in range(len(links)):
             l = links[i]
 
-            dct, df  = get_fbdata(l, driver)
+            dct, df  = get_fbdata(l, driver, parser=parser)
 
             # write details
             dct['workout_id'] = i+1

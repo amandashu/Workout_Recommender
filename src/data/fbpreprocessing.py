@@ -33,8 +33,6 @@ def clean_fbworkouts(fbworkouts_path):
     #    'Aerobics Step', 'No Equipment', 'Exercise Band', 'Sandbag', 
     #    'Barbell', 'Dumbbell', 'Stationary Bike', 'Jump Rope', 'Medicine Ball'}
 
-    print(workouts_df)
-
     # OHE Encoder Function
     def OHEListEncoder(df, col, drop=True):
         """
@@ -57,7 +55,7 @@ def clean_fbworkouts(fbworkouts_path):
     workouts_df = OHEListEncoder(workouts_df, 'equipment')
 
     print(workouts_df.columns)
-    print(workouts_df)
+    print(workouts_df.head())
     return
 
 def create_fbcommenters(comments_path, fbcommenters_path):
