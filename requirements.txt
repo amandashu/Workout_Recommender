@@ -3,12 +3,18 @@ beautifulsoup4==4.9.3
 bs4==0.0.1
 certifi==2020.12.5
 chardet==4.0.0
+click==7.1.2
+colorama==0.4.4
+Flask==1.1.2
 idna==2.10
 isort==5.7.0
+itsdangerous==1.1.0
+Jinja2==2.11.2
 joblib==1.0.0
 lazy-object-proxy==1.4.3
 lightfm==1.16
 lxml==4.6.2
+MarkupSafe==1.1.1
 mccabe==0.6.1
 numpy==1.19.5
 pandas==1.2.0
@@ -23,5 +29,7 @@ six==1.15.0
 soupsieve==2.1
 threadpoolctl==2.1.0
 toml==0.10.2
+typed-ast==1.4.2
 urllib3==1.26.2
+Werkzeug==1.0.1
 wrapt==1.12.1
