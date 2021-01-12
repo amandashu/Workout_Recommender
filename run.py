@@ -22,15 +22,17 @@ def main(targets):
             data_params = json.load(fh)
 
         print("Scraping data...")
-        scrape_data(chromedriver_path, data_params['all_links_pickle_path'],
-                    data_params['fbworkouts_path'], data_params['comments_path'])
+        scrape_data(chromedriver_path,
+                    data_params['all_links_pickle_path'],
+                    data_params['fbworkouts_path'],
+                    data_params['comments_path'])
 
         print("Preprocessing...")
         fb_preprocessing(
-            fbworkouts_path = data_params['fbworkouts_path'], 
+            fbworkouts_path = data_params['fbworkouts_path'],
             fbworkouts_clean_path = data_params['fbworkouts_clean_path'],
-            comments_path = data_params['comments_path'], 
-            fbcommenters_path = data_params['fbcommenters'], 
+            comments_path = data_params['comments_path'],
+            fbcommenters_path = data_params['fbcommenters'],
             user_item_matrix_path = data_params['user_item_matrix_path']
             )
 
@@ -39,7 +41,7 @@ def main(targets):
             data_params = json.load(fh)
 
         build_interactions(data_params['user_item_matrix_path'], data_params['fbworkouts_clean_path'])
-        
+
     return
 
 
