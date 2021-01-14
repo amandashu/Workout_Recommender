@@ -1,11 +1,16 @@
 import pandas as pd
-from top_popular import top_popular
+from top_popular import top_popular, evaluate_top_popular
 
-def run_models(user_item_interactions_path):
-    # TODO: train/test split
+def run_models(data_dct):
 
-    print("Running Top Popular...")
-    user_item_interactions = pd.read_csv(user_item_interactions_path)
-    predictions = top_popular(user_item_interactions, 30)
-    print(predictions)
-    # TODO: evaluate predictions
+
+    print("\nRunning Top Popular...")
+    predictions, _ = top_popular(data_dct['user_item_interactions'])
+    print(len(predictions))
+
+    top_pop_ndcg = evaluate_top_popular(data_dct['train_df'],
+                                        data_dct['test_ui_matrix'],
+                                        data_dct['item_map'])
+    print('Average NDCG of Top Popular: ' + str(top_pop_ndcg))
+
+    print("\nRunning LightFM...")
