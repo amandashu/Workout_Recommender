@@ -94,7 +94,7 @@ def create_UI_interactions(comments_path, fbcommenters_path, user_item_interacti
     comments_df = pd.read_csv(comments_path, usecols=['hash_id', 'workout_id']).drop_duplicates() # some users might comment twice on the same video
     fbcommenters_df = pd.read_csv(fbcommenters_path)
     merged_df = pd.merge(comments_df, fbcommenters_df, on="hash_id", how='inner')
-    interactions_df = merged_df[['user_id','workout_id']]
+    interactions_df = merged_df[['user_id','workout_id']].sort_values(['user_id','workout_id'])
     interactions_df.to_csv(user_item_interactions_path, index=False)
 
 def fb_preprocessing(fbworkouts_path, fbworkouts_clean_path, comments_path, fbcommenters_path, user_item_interactions_path):
