@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+  <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <fieldset>
+      <div>
+        {{ form.email.label }}
+
+        {% if form.email.errors %}
+            {{ form.email(size=20) }}
+            {% for e in form.email.errors %}
+              <span>{{ e}} </span>
+            {% endfor %}
+        {% else %}
+          {{ form.email(size=20) }}
+        {% endif %}
+
+      </div>
+      <div>
+        {{ form.password.label }}
+
+        {% if form.password.errors %}
+            {{ form.password(size=20) }}
+            {% for e in form.password.errors %}
+              <span>{{ e}} </span>
+            {% endfor %}
+        {% else %}
+          {{ form.password(size=20) }}
+        {% endif %}
+
+      </div>
+    </fieldset>
+    {{ form.submit() }}
+  </form>
+  <div>
+    Create An Account <a href="{{ url_for('registration_page') }}"> Here</a>
+  </div>
+{% endblock content %}
