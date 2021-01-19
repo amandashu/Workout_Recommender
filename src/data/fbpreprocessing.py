@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import pickle
 import os
 
 def clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path):
@@ -29,20 +30,15 @@ def clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path):
 
 
     # converts the calories burned from a range to a numerical mean
-    duration = workouts_df.calorie_burn.str.split('-')
-    duration = duration.apply(lambda x: (float(x[0]) + float(x[1])) / 2)
-    workouts_df.calorie_burn = duration
+    calories = workouts_df.calorie_burn.str.split('-')
+    calories_mean = calories.apply( lambda x: (float(x[0]) + float(x[1])) / 2 )
+
+
+    workouts_df.calorie_burn = calories_mean
     workouts_df = workouts_df.rename(columns={"calorie_burn": "mean_calorie_burn"})
 
-    ## asserts that the categories are regular and contains no errors or miscategorizations
-    #flatten = lambda t: [item for sublist in t for item in sublist]
-    #assert set(flatten(workouts_df.body_focus.tolist())) == {'UpperBody', 'TotalBody', 'LowerBody', 'Core'}
-    #assert set(flatten(workouts_df.training_type.tolist())) == {'Pilates', 'Plyometric',
-    #    'Toning', 'Kettlebell', 'Barre', 'Low Impact', 'Strength Training', 'Cardiovascular',
-    #    'Warm UpCool Down', 'StretchingFlexibility', 'BalanceAgility', 'HIIT'}
-    #assert set(flatten(workouts_df.equipment.tolist())) == {'Bench', 'PhysioBall', 'Kettlebell', 'Mat',
-    #    'Aerobics Step', 'No Equipment', 'Exercise Band', 'Sandbag',
-    #    'Barbell', 'Dumbbell', 'Stationary Bike', 'Jump Rope', 'Medicine Ball'}
+    workouts_loc = workouts_df.columns.get_loc("mean_calorie_burn")
+    workouts_df.insert(loc=workouts_loc + 1, column="max_calorie_burn", value=calories.apply( lambda x: + float(x[1]) ))
 
     # OHE Encoder Function
     def OHEListEncoder(df, col, drop=True):
@@ -65,7 +61,29 @@ def clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path):
     workouts_df = workouts_df.drop(['Kettlebell'], axis=1)
     workouts_df = OHEListEncoder(workouts_df, 'equipment')
 
+    workouts_df = workouts_df.drop(['youtube_link'], axis=1)
     workouts_df.to_csv(fbworkouts_clean_path, index=False)
+
+def create_metadata(fbworkouts_path, all_links_pickle_path, fbworkouts_meta_path):
+    """
+    Takes in fbworkouts.csv and all_links.pickle and outputs fbworkouts_meta.csv
+    """
+    with open(all_links_pickle_path, 'rb') as file:
+        links = pickle.load(file)
+
+    # creates series of pickle links
+    workout_fb_url = pd.Series(links)
+
+    # loads in workout url and youtube url from fbworkouts.csv
+    workouts_df = pd.read_csv(fbworkouts_path)
+    workout_ids = workouts_df.workout_id
+    workout_yt_url = workouts_df.youtube_link
+
+    # writes to pandas DataFrame
+    meta_df_dict = {'workout_id': workout_ids, 'fb_link': workout_fb_url, 'youtube_link': workout_yt_url}
+    meta_df = pd.concat(meta_df_dict, axis=1)
+
+    meta_df.to_csv(fbworkouts_meta_path, index=False)
 
 
 def create_fbcommenters(comments_path, fbcommenters_path):
@@ -97,7 +115,13 @@ def create_UI_interactions(comments_path, fbcommenters_path, user_item_interacti
     interactions_df = merged_df[['user_id','workout_id']].sort_values(['user_id','workout_id'])
     interactions_df.to_csv(user_item_interactions_path, index=False)
 
-def fb_preprocessing(fbworkouts_path, fbworkouts_clean_path, comments_path, fbcommenters_path, user_item_interactions_path):
+def fb_preprocessing(fbworkouts_path, fbworkouts_clean_path, comments_path, fbcommenters_path, user_item_interactions_path, fbworkouts_meta_path, all_links_pickle_path):
+    # create data folder if it doesn't yet exist
+    dirname = os.path.dirname(fbworkouts_clean_path)
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+    
     clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path)
+    create_metadata(fbworkouts_path, all_links_pickle_path, fbworkouts_meta_path)
     create_fbcommenters(comments_path, fbcommenters_path)
     create_UI_interactions(comments_path, fbcommenters_path, user_item_interactions_path)

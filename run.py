@@ -36,8 +36,11 @@ def main(targets):
             fbworkouts_clean_path = data_params['fbworkouts_clean_path'],
             comments_path = data_params['comments_path'],
             fbcommenters_path = data_params['fbcommenters'],
-            user_item_interactions_path = data_params['user_item_interactions_path']
+            user_item_interactions_path = data_params['user_item_interactions_path'],
+            fbworkouts_meta_path = data_params['fbworkouts_meta_path'],
+            all_links_pickle_path = data_params['all_links_pickle_path']
             )
+        print("Data preprocessing done.")
 
     # if 'train' in targets:
     #     build_interactions(data_params['user_item_interactions_path'], data_params['fbworkouts_clean_path'])

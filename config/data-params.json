@@ -1,8 +1,9 @@
 {
-  "all_links_pickle_path": "data/all_links.pickle",
-  "fbworkouts_path" : "data/fbworkouts.csv",
-  "fbworkouts_clean_path" : "data/fbworkouts_clean.csv",
-  "comments_path": "data/comments.csv",
-  "fbcommenters": "data/fbcommenters.csv",
-  "user_item_interactions_path": "data/user_item_interactions.csv"
+  "all_links_pickle_path": "data/raw/all_links.pickle",
+  "comments_path": "data/raw/comments.csv",
+  "fbworkouts_path" : "data/raw/fbworkouts.csv",
+  "fbcommenters": "data/preprocessed/fbcommenters.csv",
+  "fbworkouts_clean_path" : "data/preprocessed/fbworkouts_clean.csv",
+  "fbworkouts_meta_path": "data/preprocessed/fbworkouts_meta.csv", 
+  "user_item_interactions_path": "data/preprocessed/user_item_interactions.csv"
 }
