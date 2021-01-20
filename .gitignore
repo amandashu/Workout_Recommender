@@ -6,6 +6,7 @@ chromedriver
 .vscode/
 *.pyc
 notebook/test.ipynb
+flask_website/db_config.json
 
 # pycache
 __pycache__
