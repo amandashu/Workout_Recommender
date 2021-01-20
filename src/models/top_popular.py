@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
-from evaluation import get_target_scores
 from sklearn.metrics import ndcg_score
+from sklearn.preprocessing import normalize
 
 def top_popular(df, k=None):
     """
@@ -12,12 +12,22 @@ def top_popular(df, k=None):
     preds = np.array(workout_counts.index)
     scores = np.array(workout_counts.values)
 
-    # write predictions/scores to pickle file?
-
     if k is None:
         return preds, scores
     else:
         return preds[:k], scores[:k]
+
+def get_target_scores(external_indices, scores, dct):
+    """
+    Helper function to get input of sklearn ncdg:
+    Given movie ids and their popularity score, as well as a dictionary mapping
+    external ids to LightFM internal ids, return the list of popularity scores
+    by LightFM internal id ordering
+    """
+    internal_indices = [dct[i] for i in external_indices]
+    scores_by_internal = np.zeros(len(external_indices))
+    scores_by_internal.put(internal_indices,scores)
+    return scores_by_internal
 
 def evaluate_top_popular(train_df, test_ui_matrix, item_map, k=None):
     """
@@ -27,6 +37,5 @@ def evaluate_top_popular(train_df, test_ui_matrix, item_map, k=None):
     y_true = test_ui_matrix.toarray()
     external_indices, scores = top_popular(train_df)
     y_score = get_target_scores(external_indices, scores, item_map)
-    #print(ndcg_score([y_true[0]],[y_score])) #0.22977373086316666
     y_scores = [list(y_score)]*(y_true.shape[0])
     return ndcg_score(y_true, y_scores, k)

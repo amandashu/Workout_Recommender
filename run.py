@@ -8,8 +8,7 @@ sys.path.insert(0, 'src/models')
 from clean import remove_data
 from scrape import scrape_data
 from fbpreprocessing import fb_preprocessing
-# from train import build_interactions
-from train import get_data
+from model_preprocessing import get_data
 from run_models import run_models
 
 def main(targets):
@@ -29,6 +28,7 @@ def main(targets):
                     data_params['all_links_pickle_path'],
                     data_params['fbworkouts_path'],
                     data_params['comments_path'])
+        print("Scraping done.")
 
         print("Preprocessing...")
         fb_preprocessing(
@@ -41,9 +41,6 @@ def main(targets):
             all_links_pickle_path = data_params['all_links_pickle_path']
             )
         print("Data preprocessing done.")
-
-    # if 'train' in targets:
-    #     build_interactions(data_params['user_item_interactions_path'], data_params['fbworkouts_clean_path'])
 
     if 'model' in targets:
         data = get_data(data_params['user_item_interactions_path'])

@@ -83,8 +83,6 @@ def get_fbdata(workout_link, driver, parser='html5lib'):
     details_dct = dict(zip([x for x in fbworkout_headers if x!= 'body_focus'], span_details))
     details_dct['body_focus'] = soup.find("span",{"class":"focus demi"}).text
 
-    # scrape youtube info
-
     # comment scraping
     comments  = soup.find_all("article", {"class":"comment"})
     usernames = []
@@ -128,7 +126,7 @@ def scrape_data(chromedriver_path, all_links_pickle_path, fbworkouts_path, comme
     fbheaders = ['workout_id'] + fbworkout_headers
     cheaders = ['workout_id'] + comment_headers
 
-    # create data folder if it doesn't yet exist
+    # create data/raw folder if it doesn't yet exist
     dirname = os.path.dirname(fbworkouts_path)
     if not os.path.exists(dirname):
         os.makedirs(dirname)

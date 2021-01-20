@@ -116,11 +116,11 @@ def create_UI_interactions(comments_path, fbcommenters_path, user_item_interacti
     interactions_df.to_csv(user_item_interactions_path, index=False)
 
 def fb_preprocessing(fbworkouts_path, fbworkouts_clean_path, comments_path, fbcommenters_path, user_item_interactions_path, fbworkouts_meta_path, all_links_pickle_path):
-    # create data folder if it doesn't yet exist
+    # create data/preprocessed folder if it doesn't yet exist
     dirname = os.path.dirname(fbworkouts_clean_path)
     if not os.path.exists(dirname):
         os.makedirs(dirname)
-    
+
     clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path)
     create_metadata(fbworkouts_path, all_links_pickle_path, fbworkouts_meta_path)
     create_fbcommenters(comments_path, fbcommenters_path)
