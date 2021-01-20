@@ -11,10 +11,10 @@
   <title>Workout Recommender</title>
 
   <!-- Bootstrap core CSS -->
-  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css') }}">
 
   <!-- Custom styles for this template -->
-  <link href="css/style.css" rel="stylesheet">
+  <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
   <style>
     @media (min-width: 992px) {
         .container-scroll {
@@ -76,7 +76,7 @@
               <div class="card h-100">
                 <img class="card-img-top" src="http://placehold.it/500x325" alt="">
                 <div class="card-body">
-                  <h4 class="card-title">Card title</h4>
+                  <h4 class="card-title">{% block content %}{% endblock %}</h4>
                   <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente esse necessitatibus neque.</p>
                 </div>
                 <div class="card-footer">
@@ -199,8 +199,8 @@
   </footer>
 
   <!-- Bootstrap core JavaScript -->
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static',filename='vendor/jquery/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
 </body>
 
