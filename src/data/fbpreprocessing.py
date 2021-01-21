@@ -3,6 +3,18 @@ import numpy as np
 import pickle
 import os
 
+def strip_special_chars(df, col):
+    """
+    Helper function: this will clean up a given column in a dataframe inplace,
+    and will remove any character that is not alphanumerical, a comma, or a slash
+    """
+    df[col] = df[col].str.replace('[^a-zA-Z0-9/, ]', '', regex=True)
+
+    # add space in body_focus column after special character is removed i.e UpperBody -> Upper Body
+    if col == 'body_focus':
+        df['body_focus'] = df['body_focus'].str.replace('B', ' B')
+    return df
+
 def clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path):
     """
     Takes in fbworkouts.csv and outputs fbworkouts_clean.csv
@@ -14,31 +26,30 @@ def clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path):
     duration = workouts_df.duration.str.split().apply(lambda x: x[0] if x[1] == 'Minutes' else x)
     workouts_df.duration = duration.astype(int)
 
-    def strip_special_chars_and_split(df, col):
+    def split(df, col):
         """
-        This will clean up a given column in a dataframe inplace, and will remove
-        any character that is not alphanumerical, a comma, or a slash
+        Splits strings into list with pythonic naming (loweracse, slashes and
+        spaces replaced with _) for a given column in a dataframe
         """
-        stripped_column = df[col].str.replace('[^a-zA-Z0-9/, ]', '', regex=True)
-        df[col] = stripped_column.str.split(', ')
+        stripped_column = df[col].str.lower().replace('[ \/]', '_', regex=True)
+        df[col] = stripped_column.str.split(',_')
         return df
 
-    # strip special characters from body_focus and convert to list with {'UpperBody', 'TotalBody', 'LowerBody', 'Core'}
-    strip_special_chars_and_split(workouts_df, 'body_focus')
-    strip_special_chars_and_split(workouts_df, 'training_type')
-    strip_special_chars_and_split(workouts_df, 'equipment')
-
+    # strip special characters and convert to list i.e. ['upper_body', 'total_body', 'lower_body', 'core'\
+    for c in ['body_focus','training_type','equipment']:
+        strip_special_chars(workouts_df, c)
+        split(workouts_df, c)
 
     # converts the calories burned from a range to a numerical mean
     calories = workouts_df.calorie_burn.str.split('-')
-    calories_mean = calories.apply( lambda x: (float(x[0]) + float(x[1])) / 2 )
+    # calories_mean = calories.apply( lambda x: (float(x[0]) + float(x[1])) / 2 )
+    # workouts_df.calorie_burn = calories_mean
+    # workouts_df = workouts_df.rename(columns={"calorie_burn": "mean_calorie_burn"})
 
-
-    workouts_df.calorie_burn = calories_mean
-    workouts_df = workouts_df.rename(columns={"calorie_burn": "mean_calorie_burn"})
-
-    workouts_loc = workouts_df.columns.get_loc("mean_calorie_burn")
-    workouts_df.insert(loc=workouts_loc + 1, column="max_calorie_burn", value=calories.apply( lambda x: + float(x[1]) ))
+    workouts_loc = workouts_df.columns.get_loc("calorie_burn")
+    workouts_df.insert(loc=workouts_loc + 1, column="min_calorie_burn", value=calories.apply( lambda x: + int(x[0]) ))
+    workouts_df.insert(loc=workouts_loc + 2, column="max_calorie_burn", value=calories.apply( lambda x: + int(x[1]) ))
+    workouts_df = workouts_df.drop(["calorie_burn"], axis=1)
 
     # OHE Encoder Function
     def OHEListEncoder(df, col, drop=True):
@@ -58,7 +69,7 @@ def clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path):
     # there is both a workout type and equipment named kettlebell, meaning that there will be overlap
     # therefore, we dropped the kettlebell from the "training_type", since you won't be doing
     # kettlebell exercises without the kettlebell; kettlebell will be encoded in the equipment section
-    workouts_df = workouts_df.drop(['Kettlebell'], axis=1)
+    workouts_df = workouts_df.drop(['kettlebell'], axis=1)
     workouts_df = OHEListEncoder(workouts_df, 'equipment')
 
     workouts_df = workouts_df.drop(['youtube_link'], axis=1)
@@ -79,8 +90,36 @@ def create_metadata(fbworkouts_path, all_links_pickle_path, fbworkouts_meta_path
     workout_ids = workouts_df.workout_id
     workout_yt_url = workouts_df.youtube_link
 
+    # strip special characters i.e. 'Upper Body, Total Body'
+    for c in ['body_focus','training_type','equipment']:
+        strip_special_chars(workouts_df, c)
+
+    # get cleaned body_focus, training_type, equipment columns
+    workout_body_focus = workouts_df.body_focus
+    workout_training_type = workouts_df.training_type
+    workout_equipment = workouts_df.equipment
+
+    # get workout name from fb_link
+    def make_title(x):
+        workout_title = x[len(x)-x[::-1].find('/'):]
+        workout_title  = workout_title.replace('hiit','HITT')
+        workout_title  = workout_title.replace('-',' ').title()
+        workout_title  = workout_title.replace(' S ', '\'s ') # add apostrophe
+        return workout_title
+
+    titles = workout_fb_url.apply(make_title)
+
     # writes to pandas DataFrame
-    meta_df_dict = {'workout_id': workout_ids, 'fb_link': workout_fb_url, 'youtube_link': workout_yt_url}
+    meta_df_dict = {
+        'workout_id': workout_ids,
+        'workout_title': titles,
+        'fb_link': workout_fb_url,
+        'youtube_link': workout_yt_url,
+        'body_focus': workout_body_focus,
+        'training_type': workout_training_type,
+        'equipment': workout_equipment
+        }
+
     meta_df = pd.concat(meta_df_dict, axis=1)
 
     meta_df.to_csv(fbworkouts_meta_path, index=False)
