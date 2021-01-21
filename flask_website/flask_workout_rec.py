@@ -48,7 +48,12 @@ def login_page():
 
 @app.route('/')
 def recommendation_page():
-    return render_template('recommendation_page.html', data=data)
+    fake_model_results = [1,2,3,4,5,6,7,8]
+
+    cur = mysql.connection.cursor()
+    query = cur.execute("SELECT workout_id, workout_title FROM fbworkouts_meta")
+    results = cur.fetchall()
+    return render_template('recommendation_page.html', workouts=results)
 
 @app.route('/about')
 def about_page():
@@ -56,10 +61,7 @@ def about_page():
 
 @app.route('/contact')
 def contact_page():
-    cur = mysql.connection.cursor()
-    query = cur.execute("SELECT id FROM testing")
-    results = cur.fetchall()
-    return render_template('contact_page.html', query = results)
+    return render_template('contact_page.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
