@@ -1,6 +1,7 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, session, g
 from forms import RegistrationForm, LoginForm
 from flask_mysqldb import MySQL
+from flask_bcrypt import Bcrypt
 import json
 
 app = Flask(__name__)
@@ -14,43 +15,92 @@ app.config['MYSQL_USER'] = db_config['mysql_user']
 app.config['MYSQL_PASSWORD'] = db_config['mysql_password']
 app.config['MYSQL_DB'] = db_config['mysql_db']
 
-mysql = MySQL(app)
+db = MySQL(app)
+bcrypt = Bcrypt(app)
 
-# dummy_data
-data = [
-    {
-        'name': "Daniel's Upper Body...",
-        #'calorie':
-        #'duration': 39
-        #'difficulty':,
-        #'equipment':
-        #'training type'
-    },
-    {
-        'name': "HIIT Pilates Strength...",
-    }
-
-]
+@app.before_request
+def before_request():
+    if 'user_id' in session:
+        cur = db.connection.cursor()
+        cur.execute("SELECT * FROM users WHERE user_id = %s", (session['user_id'],))
+        g.user = cur.fetchone()
+    else:
+        g.user = None
 
 @app.route('/register', methods=['GET', 'POST'])
 def registration_page():
     form = RegistrationForm()
     if form.validate_on_submit():
-        return redirect(url_for('recommendation_page'))
+        cur = db.connection.cursor()
+
+        # check if email already exists in database
+        cur.execute("SELECT email FROM users WHERE email = %s", (form.email.data,))
+        result = cur.fetchone()
+        if result is not None: # display error
+            print('here')
+            return render_template('registration_page.html', form=form, email_error=True)
+        else: # insert user into database
+            hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            equipment_string = str(form.equipment.data)[1:-1].replace('\'','')
+
+            # get next user id
+            cur.execute("SELECT MAX(user_id) FROM users")
+            result = cur.fetchone()[0]
+            if result is None:
+                user_id = 5000 # fbcommenters end with id 4026, our users will start from 5000
+            else:
+                user_id = result + 1
+
+            # insert into data base
+            cur.execute("""
+                        INSERT INTO users(user_id, name, email, password, equipment,
+                        min_duration, max_duration, min_calories, max_calories)
+                        VALUES(%s, %s,%s,%s,%s,%s,%s,%s,%s)""",
+                        (user_id, form.name.data, form.email.data, hashed_password,
+                        equipment_string, form.min_duration.data,
+                        form.max_duration.data, form.min_calories.data,
+                        form.max_calories.data)
+                        )
+            db.connection.commit()
+            return redirect(url_for('login_page'))
+        cur.close()
     return render_template('registration_page.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
     form = LoginForm()
+    session.pop('user_id', None) # removes session if currently in one
     if form.validate_on_submit():
-        return redirect(url_for('recommendation_page'))
+        cur = db.connection.cursor()
+
+        # check if login information is correct
+        cur.execute("SELECT * FROM users WHERE email = %s", (form.email.data,))
+        result = cur.fetchone()
+
+        if result is None: # display error if email doesn't exist
+            return render_template('login_page.html', form=form, email_error=True)
+        else: # check password
+            db_password = result[3]
+            pw_match = bcrypt.check_password_hash(db_password, form.password.data)
+
+            if not pw_match: # display error if password doesn't match
+                return render_template('login_page.html', form=form, password_error=True)
+            else: # login
+                session['user_id'] = result[0] # set session to logged in user's id
+                return redirect(url_for('recommendation_page'))
+        cur.close()
+
     return render_template('login_page.html', form=form)
 
 @app.route('/')
 def recommendation_page():
-    fake_model_results = [1,2,3,4,5,6,7,8]
+    # if user is not logged in, redirect to login page
+    if g.user is None:
+        form = LoginForm()
+        return render_template('login_page.html', form=form)
 
-    cur = mysql.connection.cursor()
+
+    cur = db.connection.cursor()
     query = cur.execute("SELECT workout_id, workout_title FROM fbworkouts_meta")
     results = cur.fetchall()
     return render_template('recommendation_page.html', workouts=results)
