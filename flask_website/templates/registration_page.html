@@ -4,44 +4,93 @@
     {{ form.hidden_tag() }}
     <fieldset>
       <div>
-        {{ form.email.label }}
+        {{ form.name.label }}
+        {{ form.name(size=20) }}
+        {% if form.name.errors %}
+            {% for e in form.name.errors %}
+              <span>{{ e}} </span>
+            {% endfor %}
+        {% endif %}
+      </div>
 
+      <div>
+        {{ form.email.label }}
+        {{ form.email(size=20) }}
         {% if form.email.errors %}
-            {{ form.email(size=20) }}
             {% for e in form.email.errors %}
               <span>{{ e}} </span>
             {% endfor %}
-        {% else %}
-          {{ form.email(size=20) }}
+        {% elif email_error %}
+           <span>An account with this email has already been created</span>
         {% endif %}
-
       </div>
+
       <div>
         {{ form.password.label }}
-
+        {{ form.password(size=20) }}
         {% if form.password.errors %}
-            {{ form.password(size=20) }}
             {% for e in form.password.errors %}
               <span>{{ e}} </span>
             {% endfor %}
-        {% else %}
-          {{ form.password(size=20) }}
         {% endif %}
-
       </div>
+
       <div>
         {{ form.confirm_password.label }}
-
+        {{ form.confirm_password(size=20) }}
         {% if form.confirm_password.errors %}
-            {{ form.confirm_password(size=20) }}
             {% for e in form.confirm_password.errors %}
               <span>{{ e}} </span>
             {% endfor %}
-        {% else %}
-          {{ form.confirm_password(size=20) }}
+        {% endif %}
+      </div>
+
+      <div>
+        {{ form.equipment.label }}
+          {{ form.equipment(size=12) }}
+        {% if form.equipment.errors %}
+            {% for e in form.equipment.errors %}
+              <span>{{ e}} </span>
+            {% endfor %}
+        {% endif %}
+      </div>
+
+      <div>
+        {{ form.min_duration.label }}
+        {{ form.min_duration(size=5) }}
+        {% if form.min_duration.errors %}
+            {% for e in form.min_duration.errors %}
+              <span>{{ e}} </span>
+            {% endfor %}
+        {% endif %}
+
+        {{ form.min_duration.label }}
+        {{ form.max_duration(size=5) }}
+        {% if form.max_duration.errors %}
+            {% for e in form.max_duration.errors %}
+              <span>{{ e}} </span>
+            {% endfor %}
+        {% endif %}
+      </div>
+      <div>
+        {{ form.min_calories.label }}
+        {{ form.min_calories(size=5) }}
+        {% if form.min_calories.errors %}
+            {% for e in form.min_calories.errors %}
+              <span>{{ e}} </span>
+            {% endfor %}
+        {% endif %}
+
+        {{ form.max_calories.label }}
+        {{ form.max_calories(size=5) }}
+        {% if form.max_calories.errors %}
+            {% for e in form.max_calories.errors %}
+              <span>{{ e}} </span>
+            {% endfor %}
         {% endif %}
       </div>
     </fieldset>
+
     {{ form.submit() }}
   </form>
 {% endblock content %}

@@ -5,32 +5,34 @@
     <fieldset>
       <div>
         {{ form.email.label }}
-
+        {{ form.email(size=20) }}
         {% if form.email.errors %}
-            {{ form.email(size=20) }}
             {% for e in form.email.errors %}
-              <span>{{ e}} </span>
+              <span>{{ e }} </span>
             {% endfor %}
-        {% else %}
-          {{ form.email(size=20) }}
+        {% elif email_error %}
+           <span>Account with this email does not exist</span>
         {% endif %}
 
       </div>
       <div>
         {{ form.password.label }}
-
+        {{ form.password(size=20) }}
         {% if form.password.errors %}
-            {{ form.password(size=20) }}
             {% for e in form.password.errors %}
-              <span>{{ e}} </span>
+              <span>{{ e }} </span>
             {% endfor %}
-        {% else %}
-          {{ form.password(size=20) }}
+        {% elif password_error %}
+           <span>Incorrect password</span>
         {% endif %}
 
       </div>
     </fieldset>
     {{ form.submit() }}
+    <!-- {% if login_error %}
+       {{ form.password(size=20) }}
+       <span>Username/password is incorrect</span>
+    {% endif %} -->
   </form>
   <div>
     Create An Account <a href="{{ url_for('registration_page') }}"> Here</a>
