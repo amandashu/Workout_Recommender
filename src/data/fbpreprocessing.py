@@ -134,7 +134,7 @@ def create_fbcommenters(comments_path, fbcommenters_path):
     """
     comments_df = pd.read_csv(comments_path, usecols=['hash_id'])
     counts= comments_df.groupby('hash_id').size()
-    more_than_five = counts[counts>=5].index
+    more_than_five = counts[counts >= 5].index
 
     dct = {
         'hash_id': more_than_five,

@@ -9,7 +9,7 @@ import numpy
 from sklearn.model_selection import train_test_split
 
 
-def build_dataset(user_item_interactions_path):
+def build_dataset(user_item_interactions_path, neg_sample=False):
     """
     Takes in user/item interactions path and fits LightFM dataset object.
     Returns user-item interaction as pandas dataframe, LightFM dataset object,

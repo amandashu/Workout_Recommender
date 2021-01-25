@@ -38,9 +38,8 @@ def evaluate_top_popular(train_df, test_ui_matrix, item_map, k=None):
     Takes in training/testing data and returns average NDCG
     for top popular reccomender
     """
-    mms = MinMaxScaler()
     y_true = test_ui_matrix.toarray()
     external_indices, scores = top_popular(train_df)
     y_score = get_target_scores(external_indices, scores, item_map)
-    y_scores = mms.fit_transform([list(y_score)]*(y_true.shape[0]))
+    y_scores = [list(y_score)]*(y_true.shape[0])
     return ndcg_score(y_true, y_scores, k)

@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 from sklearn.metrics import ndcg_score
-from sklearn.preprocessing import normalize, MinMaxScaler
 from lightfm import LightFM
 
 
@@ -11,7 +10,6 @@ def light_fm(df):
     on workouts and their respective scores (# of comments)
     :param df: data dict
     """
-    mms = MinMaxScaler()
     model = LightFM(loss='warp')
 
     model.fit(df['train_ui_matrix'])
@@ -19,8 +17,7 @@ def light_fm(df):
         [u for u in range(df['user_item_interactions']['user_id'].nunique())])
     workout_id = np.asarray(
         [i for i in range(df['user_item_interactions']['workout_id'].nunique())])
-    pred = mms.fit_transform(
-        [model.predict(int(i), workout_id) for i in user_id])
+    pred = [model.predict(int(i), workout_id) for i in user_id]
 
     return pred
 
