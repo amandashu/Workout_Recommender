@@ -42,4 +42,5 @@ def evaluate_top_popular(train_df, test_ui_matrix, item_map, k=None):
     external_indices, scores = top_popular(train_df)
     y_score = get_target_scores(external_indices, scores, item_map)
     y_scores = [list(y_score)]*(y_true.shape[0])
+
     return ndcg_score(y_true, y_scores, k)
