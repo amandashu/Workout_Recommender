@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'dev'
 
-db_config = json.load(open('./db_config.json'))
+db_config = json.load(open('./config/db_config.json'))
 
 app.config['MYSQL_HOST'] = db_config['mysql_host']
 app.config['MYSQL_USER'] = db_config['mysql_user']
