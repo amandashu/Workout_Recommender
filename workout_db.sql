@@ -10,14 +10,14 @@ CREATE TABLE IF NOT EXISTS users
     name VARCHAR(100),
     email VARCHAR(100),
     password VARCHAR(100),
-    equipment VARCHAR(100),
+    equipment VARCHAR(300),
+    training_type VARCHAR(300),
     min_duration INT,
     max_duration INT,
     min_calories INT,
     max_calories INT
 );
 
-SELECT password FROM users WHERE email='abcd@gmail.com';
 
 -- manually upload fb_workouts.csv into table fbworkouts_meta with the following datatypes
 --      workout_id INT PRIMARY KEY,

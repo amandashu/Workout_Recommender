@@ -37,11 +37,22 @@ def registration_page():
         cur.execute("SELECT email FROM users WHERE email = %s", (form.email.data,))
         result = cur.fetchone()
         if result is not None: # display error
-            print('here')
             return render_template('registration_page.html', form=form, email_error=True)
         else: # insert user into database
+            # hash the password
             hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-            equipment_string = str(form.equipment.data)[1:-1].replace('\'','')
+
+            # insert string of available equipment, else empty string
+            if form.no_equipment.data == False:
+                equipment_string = str(form.equipment.data)[1:-1].replace('\'','')
+            else:
+                equipment_string = ''
+
+            # insert string of preferred training types, else have all types
+            if form.no_training_type.data == False:
+                training_type_string = str(form.training_type.data)[1:-1].replace('\'','')
+            else:
+                training_type_string = str([x[0] for x in form.training_type.choices])[1:-1].replace('\'','')
 
             # get next user id
             cur.execute("SELECT MAX(user_id) FROM users")
@@ -54,10 +65,10 @@ def registration_page():
             # insert into data base
             cur.execute("""
                         INSERT INTO users(user_id, name, email, password, equipment,
-                        min_duration, max_duration, min_calories, max_calories)
-                        VALUES(%s, %s,%s,%s,%s,%s,%s,%s,%s)""",
+                        training_type, min_duration, max_duration, min_calories,
+                        max_calories) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
                         (user_id, form.name.data, form.email.data, hashed_password,
-                        equipment_string, form.min_duration.data,
+                        equipment_string, training_type_string, form.min_duration.data,
                         form.max_duration.data, form.min_calories.data,
                         form.max_calories.data)
                         )
@@ -69,7 +80,6 @@ def registration_page():
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
     form = LoginForm()
-    session.pop('user_id', None) # removes session if currently in one
     if form.validate_on_submit():
         cur = db.connection.cursor()
 
@@ -96,14 +106,20 @@ def login_page():
 def recommendation_page():
     # if user is not logged in, redirect to login page
     if g.user is None:
-        form = LoginForm()
-        return render_template('login_page.html', form=form)
+        # form = LoginForm()
+        # return render_template('login_page.html', form=form)
+        return redirect(url_for('login_page'))
 
 
     cur = db.connection.cursor()
     query = cur.execute("SELECT * FROM fbworkouts_meta")
     results = cur.fetchall()
     return render_template('recommendation_page.html', workouts=results)
+
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None) # removes session if currently in one
+    return redirect(url_for('login_page'))
 
 @app.route('/about')
 def about_page():
