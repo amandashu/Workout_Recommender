@@ -6,3 +6,63 @@
 body {
   padding-top: 56px;
 }
+
+/*
+Attributes below derived from bootstrap.css 
+*/
+.display-5 {
+  font-size: 2.5rem;
+  font-weight: 300;
+  line-height: 1.2;
+}
+
+.display-6 {
+  font-size: 1.5rem;
+  font-weight: 300;
+  line-height: 1.2;
+}
+
+.display-7 {
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.2;
+}
+
+body {
+  background-color: #2c3531;
+}
+
+.bg-dark {
+  background-color: #1F2833 !important;
+}
+
+.jumbotron {
+  background-color: #45A29E;
+  color: white;
+}
+ .jumbotron > p > a {
+   color: #66FCF1;
+ }
+
+.lead-color {
+  color: white;
+}
+
+.cropped-yt-thumb {
+  object-fit: cover;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1F2833;
+  border-color: #45A29E;
+}
+
+@media (min-width: 992px) {
+  .container-scroll {
+      overflow-x: auto;
+  }
+  .container-scroll > .row {
+      width: 133.33333333%; /* = 100% * 4/3 */
+  }
+}

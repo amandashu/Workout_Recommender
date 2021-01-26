@@ -2,52 +2,63 @@
 {% block content %}
 
   <!-- Page Content -->
-  <div class="container">
+  <div class="">
+    <div class="container-fluid">
+      <div class="row text-center">
+        <div class="col-lg-1 col-md-6 mb-4"></div>
+        <div class=col-lg-10>
+          <header class="jumbotron my-4">
+            <h1 class="display-3">Hello {{ g.user[1] }}!</h1>
+            <p class="lead">Try our recommended daily routine! This routine is the one that we think best fits you.</p>
+            <a href="#" class="btn btn-primary btn-lg">Start Workout!</a>
+          </header>
+        </div>
+        <div class="col-lg-1 col-md-6 mb-4"></div>
+      </div>
+      <!-- Jumbotron Header -->
 
-    <!-- Jumbotron Header -->
-    <header class="jumbotron my-4">
-      <h1 class="display-3">Hello {{ g.user[1] }}!</h1>
-      <h1 class="display-3">Recommended Routine</h1>
-      <p class="lead">Try our recommended daily routine! This routine is the one that we think best fits you.</p>
-      <a href="#" class="btn btn-primary btn-lg">Start Workout!</a>
-    </header>
+    </div>
 
     <!-- Page Features -->
-    <div class="container-fluid container-scroll">
+    <div class="container-fluid">
         <div class="row text-center">
-          {% for w in workouts[:4] %}
-            <div class="col-lg-3 col-md-6 mb-4">
+          <div class="col-lg-1 col-md-6 mb-4"></div>
+          {% for w in workouts[:5] %}
+            <div class="col-lg-2 col-md-6 mb-4">
               <div class="card h-100">
-                <img class="card-img-top" src="http://placehold.it/500x325" alt="">
+                <img class="card-img-top cropped-yt-thumb" src="{{'https://img.youtube.com/vi/' + w[3]|replace('https://www.youtube.com/watch?v=', '') + '/0.jpg'}}" alt="">
                 <div class="card-body">
                   <h4 class="card-title">{{ w[1] }}</h4>
-                  <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente esse necessitatibus neque.</p>
+                  <p class="card-text">Equipment: {{ w[4] }} <br> Training Type: {{ w[5] }} <br>  Body Focus: {{ w[6] }}</p>
                 </div>
                 <div class="card-footer">
-                  <a href="#" class="btn btn-primary">Start Workout!</a>
+                  <a href="{{ w[2] }}" class="btn btn-primary">Start Workout!</a>
                 </div>
               </div>
             </div>
           {% endfor %}
+          <div class="col-lg-1 col-md-6 mb-4"></div>
         </div>
     </div>
 
-    <div class="container-fluid container-scroll">
+    <div class="container-fluid">
       <div class="row text-center">
-        {% for w in workouts[4:8] %}
-          <div class="col-lg-3 col-md-6 mb-4">
+        <div class="col-lg-1 col-md-6 mb-4"></div>
+        {% for w in workouts[4:9] %}
+          <div class="col-lg-2 col-md-6 mb-4">
             <div class="card h-100">
-              <img class="card-img-top" src="http://placehold.it/500x325" alt="">
+              <img class="card-img-top" src="{{'https://img.youtube.com/vi/' + w[3]|replace('https://www.youtube.com/watch?v=', '') + '/0.jpg'}}" alt="">
               <div class="card-body">
                 <h4 class="card-title">{{ w[1] }}</h4>
-                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente esse necessitatibus neque.</p>
+                <p class="card-text">Equipment: {{ w[4] }} <br> Training Type: {{ w[5] }} <br>  Body Focus: {{ w[6] }}</p>
               </div>
               <div class="card-footer">
-                <a href="#" class="btn btn-primary">Start Workout!</a>
+                <a href="{{ w[2] }}" class="btn btn-primary">Start Workout!</a>
               </div>
             </div>
           </div>
         {% endfor %}
+        <div class="col-lg-1 col-md-6 mb-4"></div>
       </div>
     </div>
 

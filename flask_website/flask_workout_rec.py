@@ -101,7 +101,7 @@ def recommendation_page():
 
 
     cur = db.connection.cursor()
-    query = cur.execute("SELECT workout_id, workout_title FROM fbworkouts_meta")
+    query = cur.execute("SELECT * FROM fbworkouts_meta")
     results = cur.fetchall()
     return render_template('recommendation_page.html', workouts=results)
 

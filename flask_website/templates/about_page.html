@@ -1,6 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
 
-  <!-- html here-->
+  <!-- Page Content -->
+  <div class="container">
+    <div class="container-fluid">
+      <div class="row text-center">
+          <header class="jumbotron my-4">
+            <h1 class="display-3">About</h1>
+            <p class="lead">We propose a workout recommender system that recommends personalized workout videos by Fitness Blender, based on user preference defined during onboarding and workout history of users. Our recommender system will be a website that displays several lists of recommendations (similar to Netflix’s user interface), such as “top 5 upper body cardio workouts for you”.  The idea is that each time users login into our website, they can choose a workout to do after browsing the personalized recommendations lists, and they no longer need to put much thought into building a good workout routine.
+              <br><br>
+              The data is scraped from Fitness Blender, which provides us with both the workout video attributes and user-item interaction information based off of comments by Fitness Blender users found under each workout webpage. We also gather data from users of our website (those who we make recommendations to), namely each user’s account information, workout preferences, and previously completed workouts.
+              <br><br>
+              When users are first onboarded, the recommendations will be semi-personalized, as we will use a simple top popular algorithm to recommend workout videos that are the most popular and match the most to their initially inputted information. As our users start to workout, we can then have a more personalized approach with a collaborative filtering algorithm using the data on our users’ previously finished workouts and similar user’s (from both Fitness Blender commenters and our own users) finished workouts to recommend their future workouts. 
+              <br><br>
+              Our website will display several lists of recommendations in a row-wise fashion (each list as a row). These lists are for a particular body focus and training type combination (i.e. upper body weight training). To implement creating these lists, we filter the relevant body focus/training type  from the recommendations predicted by our model. In order to choose the ordering of the lists themselves (which lists are displayed higher on the website), we will take the most recently finished workout by the user and base the ordering of lists on that workout’s attributes.
+              <br><br>
+              This project was created by Amanda Shu, Najeem Kanishka, and Peter Peng 
+              for the UCSD DSC180A/B Capstone Project.</p>
+              <a href="https://github.com/amandashu/Workout_Recommender" class="btn btn-primary btn-lg">GitHub Repo</a>
+          </header>
+      </div>
+    </div>
+  </div>
   
 {% endblock content %}
