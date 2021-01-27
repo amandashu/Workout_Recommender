@@ -15,7 +15,7 @@ def run_models(data_dct):
     user_id = np.asarray(
         [u for u in range(data_dct['user_item_interactions']['user_id'].nunique())])
     pred_random = np.array([np.random.normal(0, 1, 580) for i in user_id])
-    random_ndcg = evaluate(data_dct, pred_random)
+    random_ndcg = evaluate(data_dct, pred_random, 10)
 
     print('Average NDCG of Random: ' + str(random_ndcg))
 
@@ -26,7 +26,7 @@ def run_models(data_dct):
 
     top_pop_ndcg = evaluate_top_popular(data_dct['train_df'],
                                         data_dct['test_ui_matrix'],
-                                        data_dct['item_map'])
+                                        data_dct['item_map'], 10)
 
     print('Average NDCG of Top Popular: ' + str(top_pop_ndcg))
 
@@ -34,6 +34,6 @@ def run_models(data_dct):
     print("\nRunning LightFM...")
 
     pred_lightfm = light_fm(data_dct)
-    light_fm_ndcg = evaluate(data_dct, pred_lightfm)
+    light_fm_ndcg = evaluate(data_dct, pred_lightfm, 10)
 
     print('Average NDCG of LightFM: ' + str(light_fm_ndcg))

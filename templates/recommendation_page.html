@@ -11,9 +11,27 @@
             <h1 class="display-3">Hello {{ g.user[1] }}!</h1>
             <p class="lead">Try our recommended daily routine! This routine is the one that we think best fits you.</p>
             <a href="#" class="btn btn-primary btn-lg">Start Workout!</a>
+            
+            <select id="rec-engine">
+              <option value="random">Random</option>
+              <option value="toppop">TopPop</option>
+              <option value="lightfm">LightFM</option>
+            </select>
+    
+            <script>
+              document.getElementById('rec-engine').onchange = function() {
+                localStorage.setItem('selectedtem', document.getElementById('rec-engine').value);
+                window.location.reload();
+              };
+        
+              if (localStorage.getItem('selectedtem')) {
+                document.getElementById('rec-engine').value = localStorage.getItem('selectedtem');
+              }
+            </script>
           </header>
         </div>
         <div class="col-lg-1 col-md-6 mb-4"></div>
+        
       </div>
       <!-- Jumbotron Header -->
 
