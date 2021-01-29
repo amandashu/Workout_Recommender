@@ -10,6 +10,7 @@ from scrape import scrape_data
 from fbpreprocessing import fb_preprocessing
 from model_preprocessing import get_data
 from run_models import run_models
+from youtube import get_youtube
 
 def main(targets):
     if 'clean' in targets:
@@ -30,6 +31,11 @@ def main(targets):
                     data_params['comments_path'])
         print("Scraping done.")
 
+        print("Querying Youtube API...")
+        get_youtube(data_params['fbworkouts_path'],
+                    data_params['youtube_csv_path'])
+        print("Querying done")
+
         print("Preprocessing...")
         fb_preprocessing(
             fbworkouts_path = data_params['fbworkouts_path'],
@@ -38,7 +44,8 @@ def main(targets):
             fbcommenters_path = data_params['fbcommenters'],
             user_item_interactions_path = data_params['user_item_interactions_path'],
             fbworkouts_meta_path = data_params['fbworkouts_meta_path'],
-            all_links_pickle_path = data_params['all_links_pickle_path']
+            all_links_pickle_path = data_params['all_links_pickle_path'],
+            youtube_csv_path = data_params['youtube_csv_path']
             )
         print("Data preprocessing done.")
 

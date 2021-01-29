@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, session, g
-from forms import RegistrationForm, LoginForm
+from src.app.forms import RegistrationForm, LoginForm
 from flask_mysqldb import MySQL
 from flask_bcrypt import Bcrypt
 import json

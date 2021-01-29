@@ -11,13 +11,13 @@ The data is scraped from https://www.fitnessblender.com/. We are using the data 
 
 - `run.py`: Run to get data and model results.
 - `app.py`: Runs flask web application.
-- `forms.py`: Contains wtforms classes for registration/login pages.
 - `workout_db.sql`: Contains sql statements for creation of tables in database.
 
 **Source**
 - The `src/data` folder contains `scrape.py`, the web-scraping script that writes three data files into `data/raw` folder. `fbpreprocessing.py` takes these raw data files and outputs cleaned/transformed data files into `data/preprocessed` folder. `model_preprocessing` reads in preprocessed data and transforms the data into what is needed for model inputs.
 - `src/models` contains `run_models.py` which trains and evaluates the models. Models are implemented in `lightm_fm.py` and `top_popular.py`
 - The `src/utils` folder has `clean.py` which implements the standard target `clean`.
+- The `src/app` folder holds files for the web application. `forms.py` ontains wtforms classes for registration/login pages.
 
 **Config**: `data-params.json` has file paths outputs for data collection/preprocessing. To webscrape, this folder should also include `chromedriver.json`. To run the app, this folder should also include `db_config.json` which contains database configurations.
 

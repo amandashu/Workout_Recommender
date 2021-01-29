@@ -75,7 +75,7 @@ def clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path):
     workouts_df = workouts_df.drop(['youtube_link'], axis=1)
     workouts_df.to_csv(fbworkouts_clean_path, index=False)
 
-def create_metadata(fbworkouts_path, all_links_pickle_path, fbworkouts_meta_path):
+def create_metadata(fbworkouts_path, all_links_pickle_path, fbworkouts_meta_path, youtube_csv_path):
     """
     Takes in fbworkouts.csv and all_links.pickle and outputs fbworkouts_meta.csv
     """
@@ -100,14 +100,8 @@ def create_metadata(fbworkouts_path, all_links_pickle_path, fbworkouts_meta_path
     workout_equipment = workouts_df.equipment
 
     # get workout name from fb_link
-    def make_title(x):
-        workout_title = x[len(x)-x[::-1].find('/'):]
-        workout_title  = workout_title.replace('hiit','HITT')
-        workout_title  = workout_title.replace('-',' ').title()
-        workout_title  = workout_title.replace(' S ', '\'s ') # add apostrophe
-        return workout_title
-
-    titles = workout_fb_url.apply(make_title)
+    youtube_df = pd.read_csv(youtube_csv_path)
+    titles = youtube_df['title']
 
     # writes to pandas DataFrame
     meta_df_dict = {
@@ -154,13 +148,13 @@ def create_UI_interactions(comments_path, fbcommenters_path, user_item_interacti
     interactions_df = merged_df[['user_id','workout_id']].sort_values(['user_id','workout_id'])
     interactions_df.to_csv(user_item_interactions_path, index=False)
 
-def fb_preprocessing(fbworkouts_path, fbworkouts_clean_path, comments_path, fbcommenters_path, user_item_interactions_path, fbworkouts_meta_path, all_links_pickle_path):
+def fb_preprocessing(fbworkouts_path, fbworkouts_clean_path, comments_path, fbcommenters_path, user_item_interactions_path, fbworkouts_meta_path, all_links_pickle_path, youtube_csv_path):
     # create data/preprocessed folder if it doesn't yet exist
     dirname = os.path.dirname(fbworkouts_clean_path)
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
     clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path)
-    create_metadata(fbworkouts_path, all_links_pickle_path, fbworkouts_meta_path)
+    create_metadata(fbworkouts_path, all_links_pickle_path, fbworkouts_meta_path, youtube_csv_path)
     create_fbcommenters(comments_path, fbcommenters_path)
     create_UI_interactions(comments_path, fbcommenters_path, user_item_interactions_path)
