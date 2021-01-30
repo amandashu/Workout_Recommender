@@ -3,6 +3,8 @@ from src.app.forms import RegistrationForm, LoginForm
 from flask_mysqldb import MySQL
 from flask_bcrypt import Bcrypt
 import json
+import pandas as pd
+from src.app.rec_list import filter
 
 app = Flask(__name__)
 
@@ -22,14 +24,14 @@ bcrypt = Bcrypt(app)
 @app.before_request
 def before_request():
     if 'user_id' in session:
-        cur = db.connection.cursor()
-        cur.execute("SELECT * FROM users WHERE user_id = %s",
-                    (session['user_id'],))
-        g.user = cur.fetchone()
+        query = "SELECT * FROM users WHERE user_id = " + str(session['user_id'])
+        results = pd.read_sql_query(query , db.connection)
+        g.user = results.iloc[0]
     else:
         g.user = None
 
 
+from src.app.register import register_user
 @app.route('/register', methods=['GET', 'POST'])
 def registration_page():
     form = RegistrationForm()
@@ -47,21 +49,6 @@ def registration_page():
             hashed_password = bcrypt.generate_password_hash(
                 form.password.data).decode('utf-8')
 
-            # insert string of available equipment, else empty string
-            if form.no_equipment.data == False:
-                equipment_string = str(form.equipment.data)[
-                    1:-1].replace('\'', '')
-            else:
-                equipment_string = ''
-
-            # insert string of preferred training types, else have all types
-            if form.no_training_type.data == False:
-                training_type_string = str(form.training_type.data)[
-                    1:-1].replace('\'', '')
-            else:
-                training_type_string = str([x[0] for x in form.training_type.choices])[
-                    1:-1].replace('\'', '')
-
             # get next user id
             cur.execute("SELECT MAX(user_id) FROM users")
             result = cur.fetchone()[0]
@@ -70,16 +57,7 @@ def registration_page():
             else:
                 user_id = result + 1
 
-            # insert into data base
-            cur.execute("""
-                        INSERT INTO users(user_id, name, email, password, equipment,
-                        training_type, min_duration, max_duration, min_calories,
-                        max_calories) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
-                        (user_id, form.name.data, form.email.data, hashed_password,
-                         equipment_string, training_type_string, form.min_duration.data,
-                         form.max_duration.data, form.min_calories.data,
-                         form.max_calories.data)
-                        )
+            cur.execute(*register_user(form, user_id, hashed_password))
             db.connection.commit()
             return redirect(url_for('login_page'))
         cur.close()
@@ -105,8 +83,7 @@ def login_page():
 
             if not pw_match:  # display error if password doesn't match
                 return render_template('login_page.html', form=form, password_error=True)
-            else:  # login
-                # set session to logged in user's id
+            else:  # login, set session to logged in user's id
                 session['user_id'] = result[0]
                 return redirect(url_for('recommendation_page'))
         cur.close()
@@ -118,15 +95,19 @@ def login_page():
 def recommendation_page():
     # if user is not logged in, redirect to login page
     if g.user is None:
-        # form = LoginForm()
-        # return render_template('login_page.html', form=form)
         return redirect(url_for('login_page'))
 
-    cur = db.connection.cursor()
-    query = cur.execute(
-        "SELECT * FROM fbworkouts_meta ORDER BY RAND() LIMIT 10")
-    results = cur.fetchall()
+    # # the model's predictions (list of workout_id)
+    # query = "SELECT workout_id FROM fbworkouts ORDER BY RAND() LIMIT 10"
+    # model_predictions = list(pd.read_sql_query(query , db.connection)['workout_id'])
+    #
+    # query = "SELECT * FROM fbworkouts WHERE workout_id in (" + str(model_predictions)[1:-1] +")"
+    # workouts = pd.read_sql_query(query , db.connection)
+    #
+    # results = filter(workouts, g.user)
 
+    query = "SELECT * FROM fbworkouts_meta ORDER BY RAND() LIMIT 10"
+    results = pd.read_sql_query(query , db.connection)
     return render_template('recommendation_page.html', workouts=results)
 
 

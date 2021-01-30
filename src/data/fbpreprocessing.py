@@ -28,11 +28,12 @@ def clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path):
 
     def split(df, col):
         """
-        Splits strings into list with pythonic naming (loweracse, slashes and
+        Splits strings into list with pythonic naming (lowercase, slashes and
         spaces replaced with _) for a given column in a dataframe
         """
-        stripped_column = df[col].str.lower().replace('[ \/]', '_', regex=True)
-        df[col] = stripped_column.str.split(',_')
+        df[col] = df[col].str.lower().replace('[ \/]', '_', regex=True)
+        df[col+'_list'] = df[col].str.split(',_')
+        df[col] = df[col].str.replace(',_',', ')
         return df
 
     # strip special characters and convert to list i.e. ['upper_body', 'total_body', 'lower_body', 'core'\
@@ -64,13 +65,13 @@ def clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path):
         return df.join(pd.crosstab(expanded_col.index, expanded_col))
 
 
-    workouts_df = OHEListEncoder(workouts_df, 'body_focus')
-    workouts_df = OHEListEncoder(workouts_df, 'training_type')
+    workouts_df = OHEListEncoder(workouts_df, 'body_focus_list')
+    workouts_df = OHEListEncoder(workouts_df, 'training_type_list')
     # there is both a workout type and equipment named kettlebell, meaning that there will be overlap
     # therefore, we dropped the kettlebell from the "training_type", since you won't be doing
     # kettlebell exercises without the kettlebell; kettlebell will be encoded in the equipment section
     workouts_df = workouts_df.drop(['kettlebell'], axis=1)
-    workouts_df = OHEListEncoder(workouts_df, 'equipment')
+    workouts_df = OHEListEncoder(workouts_df, 'equipment_list')
 
     workouts_df = workouts_df.drop(['youtube_link'], axis=1)
     workouts_df.to_csv(fbworkouts_clean_path, index=False)
