@@ -1,8 +1,6 @@
 import pandas as pd
 import numpy as np
 from sklearn.metrics import ndcg_score
-from sklearn.preprocessing import normalize, MinMaxScaler
-
 
 def top_popular(df, k=None):
     """
