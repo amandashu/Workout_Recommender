@@ -1,4 +1,7 @@
 import pandas as pd
+"""
+TODO: this currently gets rid of the ordering of predictions -> need to change this 
+"""
 
 def filter(workouts, user):
     """
@@ -21,11 +24,16 @@ def filter(workouts, user):
     def equipment_helper(str):
         """
         Takes in workout's required equipment and returns True if
-        user has ALL of the required equipment else False
+        user has ALL of the required equipment else False or if workout lists
+        no equipment
         """
         equipment_list = str.split(', ')
+        if 'no_equipment' in equipment_list:
+            return True
         for e in equipment_list:
-            if user[e] == 0:
+            if e == 'no_equipment':
+                pass
+            elif user[e] == 0:
                 return False
         return True
 
@@ -34,7 +42,7 @@ def filter(workouts, user):
         Takes in workout's series , and returns True if user's preferred min/max
         calorie range has some overlap with the workout's calorie range
         """
-        if user['max_calories'] < series['min_calorie_burn'] or user['max_calorie_burn'] > max:
+        if user['max_calories'] < series['min_calorie_burn'] or series['max_calorie_burn'] < user['min_calories']:
             return False
         return True
 
@@ -43,13 +51,13 @@ def filter(workouts, user):
         Takes in workout's attr (difficulty or duration) and returns True if it is
         within the range of user's preferred attr range (inclusive)
         """
-        if attr >= ['min_' + attr] and attry <=['max_' + attr]:
+        if x >= user['min_' + attr] and x <= user['max_' + attr]:
             return True
         return False
 
     # filter
-    workouts = workouts[workouts['duration'].apply(in_range_helper)]
-    workouts = workouts[workouts['difficulty'].apply(in_range_helper)]
+    workouts = workouts[workouts['duration'].apply(in_range_helper, args=('duration',))]
+    workouts = workouts[workouts['difficulty'].apply(in_range_helper, args=('difficulty',))]
     workouts = workouts[workouts['equipment'].apply(equipment_helper)]
     workouts = workouts[workouts['training_type'].apply(training_type_helper)]
     workouts = workouts[workouts.apply(calorie_helper,axis=1)]

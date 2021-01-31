@@ -100,11 +100,17 @@ def recommendation_page():
     # # the model's predictions (list of workout_id)
     # query = "SELECT workout_id FROM fbworkouts ORDER BY RAND() LIMIT 10"
     # model_predictions = list(pd.read_sql_query(query , db.connection)['workout_id'])
-    #
+    # 
+    # # get the workouts df for the predicted workouts
     # query = "SELECT * FROM fbworkouts WHERE workout_id in (" + str(model_predictions)[1:-1] +")"
     # workouts = pd.read_sql_query(query , db.connection)
     #
-    # results = filter(workouts, g.user)
+    # # filter for user preferences and split into recommentation lists for each body focus
+    # dct = filter(workouts, g.user)
+    # lst = [] # list of lists, where each list is recommendations for a body focuz
+    # for values in dct.values():
+    #     query = "SELECT * FROM fbworkouts_meta WHERE workout_id in (" + str(values)[1:-1] + ')'
+    #     list.append(pd.read_sql_query(query , db.connection))
 
     query = "SELECT * FROM fbworkouts_meta ORDER BY RAND() LIMIT 10"
     results = pd.read_sql_query(query , db.connection)
