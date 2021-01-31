@@ -1,6 +1,6 @@
 import pandas as pd
 """
-TODO: this currently gets rid of the ordering of predictions -> need to change this 
+TODO: this currently gets rid of the ordering of predictions -> need to change this
 """
 
 def filter(workouts, user):
@@ -46,7 +46,7 @@ def filter(workouts, user):
             return False
         return True
 
-    def in_range_helper(attr):
+    def in_range_helper(x, attr):
         """
         Takes in workout's attr (difficulty or duration) and returns True if it is
         within the range of user's preferred attr range (inclusive)
