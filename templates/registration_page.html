@@ -102,7 +102,7 @@
                 {% endif %}
               </div>
 
-              <h3 class="display-6">Workout Duration Range in Minutes</h3>
+              <h3 class="display-6">My Preferred Workout Duration Range in Minutes</h3>
               <div>
                 {{ form.min_duration.label(class='display-7') }}
                 {{ form.min_duration(size=5, value=1, placeholder=1) }}
@@ -120,6 +120,7 @@
                     {% endfor %}
                 {% endif %}
               </div>
+              <h3 class="display-6">My Preferred Calorie Burn Range</h3>
               <div>
                 {{ form.min_calories.label(class='display-7') }}
                 {{ form.min_calories(size=5, value=1, placeholder=1) }}
@@ -130,9 +131,28 @@
                 {% endif %}
 
                 {{ form.max_calories.label(class='display-7') }}
-                {{ form.max_calories(size=5, value=1300, placeholder=120) }}
+                {{ form.max_calories(size=5, value=1300, placeholder=1300) }}
                 {% if form.max_calories.errors %}
                     {% for e in form.max_calories.errors %}
+                      <span>{{ e}} </span>
+                    {% endfor %}
+                {% endif %}
+              </div>
+
+              <h3 class="display-6">My Preferred Diffculty Range (1-5)</h3>
+              <div>
+                {{ form.min_difficulty.label(class='display-7') }}
+                {{ form.min_difficulty(size=5, value=1, placeholder=1) }}
+                {% if form.min_difficulty.errors %}
+                    {% for e in form.min_difficulty.errors %}
+                      <span>{{ e}} </span>
+                    {% endfor %}
+                {% endif %}
+
+                {{ form.max_difficulty.label(class='display-7') }}
+                {{ form.max_difficulty(size=5, value=5, placeholder=5) }}
+                {% if form.max_difficulty.errors %}
+                    {% for e in form.max_difficulty.errors %}
                       <span>{{ e}} </span>
                     {% endfor %}
                 {% endif %}

@@ -13,22 +13,22 @@
         <div class=col-lg-10>
           
           <header class="jumbotron my-4">
-            <h1 class="display-3">Hello {{ g.user[1] }}!</h1>
+            <h1 class="display-3">Hello {{ g.user['name'] }}!</h1>
             <p class="lead">Try our recommended daily routine! This routine is the one that we think best fits you.</p>
             <a href="#" class="btn btn-primary btn-lg">Start Workout!</a>
-            
+
             <select id="rec-engine">
               <option value="random">Random</option>
               <option value="toppop">TopPop</option>
               <option value="lightfm">LightFM</option>
             </select>
-    
+
             <script>
               document.getElementById('rec-engine').onchange = function() {
                 localStorage.setItem('selectedtem', document.getElementById('rec-engine').value);
                 window.location.reload();
               };
-        
+
               if (localStorage.getItem('selectedtem')) {
                 document.getElementById('rec-engine').value = localStorage.getItem('selectedtem');
               }
@@ -36,7 +36,6 @@
           </header>
         </div>
         <div class="col-lg-1 col-md-6 mb-4"></div>
-        
       </div>
       <!-- Jumbotron Header -->
 
@@ -46,16 +45,16 @@
     <div class="container-fluid">
         <div class="row text-center">
           <div class="col-lg-1 col-md-6 mb-4"></div>
-          {% for w in workouts[:5] %}
+          {% for i, w in workouts.iloc[:5].iterrows() %}
             <div class="col-lg-2 col-md-6 mb-4">
               <div class="card h-100">
-                <img class="card-img-top cropped-yt-thumb" src="{{'https://img.youtube.com/vi/' + w[3]|replace('https://www.youtube.com/watch?v=', '') + '/0.jpg'}}" alt="">
+                <img class="card-img-top cropped-yt-thumb" src="{{'https://img.youtube.com/vi/' + w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') + '/0.jpg'}}" alt="">
                 <div class="card-body">
-                  <h4 class="card-title">{{ w[1] }}</h4>
-                  <p class="card-text">Equipment: {{ w[4] }} <br> Training Type: {{ w[5] }} <br>  Body Focus: {{ w[6] }}</p>
+                  <h4 class="card-title">{{ w['workout_title'] }}</h4>
+                  <p class="card-text">Equipment: {{ w['equipment'] }} <br> Training Type: {{ w['training_type'] }} <br>  Body Focus: {{ w['body_focus'] }}</p>
                 </div>
                 <div class="card-footer">
-                  <a href="{{ w[2] }}" class="btn btn-primary" target="_blank">Start Workout!</a>
+                  <a href="{{ w['youtube_link'] }}" class="btn btn-primary" target="_blank">Start Workout!</a>
                 </div>
               </div>
             </div>
@@ -67,16 +66,16 @@
     <div class="container-fluid">
       <div class="row text-center">
         <div class="col-lg-1 col-md-6 mb-4"></div>
-        {% for w in workouts[4:9] %}
+        {% for i, w in workouts.iloc[5:10].iterrows() %}
           <div class="col-lg-2 col-md-6 mb-4">
             <div class="card h-100">
-              <img class="card-img-top" src="{{'https://img.youtube.com/vi/' + w[3]|replace('https://www.youtube.com/watch?v=', '') + '/0.jpg'}}" alt="">
+              <img class="card-img-top cropped-yt-thumb" src="{{'https://img.youtube.com/vi/' + w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') + '/0.jpg'}}" alt="">
               <div class="card-body">
                 <h4 class="card-title">{{ w[1] }}</h4>
-                <p class="card-text">Equipment: {{ w[4] }} <br> Training Type: {{ w[5] }} <br>  Body Focus: {{ w[6] }}</p>
+                <p class="card-text">Equipment: {{ w['equipment'] }} <br> Training Type: {{ w['training_type'] }} <br>  Body Focus: {{ w['body_focus'] }}</p>
               </div>
               <div class="card-footer">
-                <a href="{{ w[2] }}" class="btn btn-primary" target="_blank">Start Workout!</a>
+                <a href="{{ w['youtube_link'] }}" class="btn btn-primary" target="_blank">Start Workout!</a>
               </div>
             </div>
           </div>

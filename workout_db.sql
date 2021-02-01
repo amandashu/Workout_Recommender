@@ -15,7 +15,34 @@ CREATE TABLE IF NOT EXISTS users
     min_duration INT,
     max_duration INT,
     min_calories INT,
-    max_calories INT
+    max_calories INT,
+    min_difficulty INT,
+    max_difficulty INT,
+    -- binary variables for training type
+    balance_agility INT,
+     barre INT,
+     cardiovascular INT,
+     hiit INT,
+     low_impact INT,
+     pilates INT,
+     plyometric INT,
+     strength_training INT,
+     stretching_flexibility INT,
+     toning INT,
+     warm_up_cool_down INT,
+     aerobics_step INT,
+     -- binary variables for equipment
+     barbell INT,
+     bench INT,
+     dumbbell INT,
+     exercise_band INT,
+     jump_rope INT,
+     kettlebell INT,
+     mat INT,
+     medicine_ball INT,
+     physioball INT,
+     sandbag INT,
+     stationary_bike INT
 );
 
 
@@ -35,6 +62,9 @@ CREATE TABLE IF NOT EXISTS users
 --      min_calorie_burn INT,
 --      max_calorie_burn INT,
 --      difficulty INT,
+--      equipment VARCHAR(300),
+--      training_type VARCHAR(300),
+--      body_focus VARCHAR(300),
 --      core INT,
 --      lowerbody INT,
 --      totalbody INT,
@@ -63,5 +93,3 @@ CREATE TABLE IF NOT EXISTS users
 --      physioball INT,
 --      sandbag INT,
 --      stationary_bike INT
-
-

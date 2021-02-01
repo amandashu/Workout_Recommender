@@ -23,7 +23,7 @@ class RegistrationForm(FlaskForm):
     no_equipment = BooleanField('I have no equipment', render_kw={'onchange': "hide(equipment_div)"})
 
     training_type = MultiCheckboxField('My Preferred Training Types', choices=[
-        ('barre', 'Barre'), ('balane_agility', 'Balance Agility'), ('cardiovascular',
+        ('barre', 'Barre'), ('balance_agility', 'Balance Agility'), ('cardiovascular',
         'Cardiovascular'), ('hiit', 'HIIT'), ('low_impact', 'Low Impact'),
         ('pilates', 'Pilates'), ('plyometric', 'Plyometric'), ('strength_training',
         'Strength Training'), ('stretching_flexibility','Stretching/Flexibility'),
@@ -42,6 +42,11 @@ class RegistrationForm(FlaskForm):
     max_calories = IntegerField('Maximum Calories',
                     validators=[DataRequired(), NumberRange(1,1300)])
 
+    min_difficulty = IntegerField('Minimum Difficulty',
+                    validators=[DataRequired(), NumberRange(1,5)])
+    max_difficulty = IntegerField('Maximum Difficulty',
+                    validators=[DataRequired(), NumberRange(1,5)])
+
     submit = SubmitField('Register')
 
     def validate_max_duration(form, field):
@@ -51,6 +56,10 @@ class RegistrationForm(FlaskForm):
     def validate_max_calories(form, field):
         if field.data < form.min_calories.data:
             raise ValidationError('Minimum Calories must be less than Maximum Calories')
+
+    def validate_max_difficulty(form, field):
+        if field.data < form.min_difficulty.data:
+            raise ValidationError('Minimum Difficulty must be less than Maximum Difficulty')
 
     def validate_no_equipment(form, field):
         if field.data == False and form.equipment.data == []:
