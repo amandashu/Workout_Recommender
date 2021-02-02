@@ -17,7 +17,6 @@ def register_user(form, user_id, hashed_password):
     if form.no_equipment.data == False:
         equipment_string = str(form.equipment.data)[
             1:-1].replace('\'', '')
-
         for e in form.equipment.data:
             dct[e] = 1
     else:
@@ -28,7 +27,7 @@ def register_user(form, user_id, hashed_password):
         training_type_string = str(form.training_type.data)[
             1:-1].replace('\'', '')
 
-        for x in form.training_type.choices:
+        for x in form.training_type.data:
             dct[x] = 1
     else:
         training_type_string = str([x[0] for x in form.training_type.choices])[
@@ -52,6 +51,8 @@ def register_user(form, user_id, hashed_password):
 
     # tuples of values to insert
     equipment_training_types_tup = tuple([dct[v] for v in dct.keys()])
+
+    # print(len(equipment_training_types_tup))
     tup = (user_id, form.name.data, form.email.data, hashed_password,
              equipment_string, training_type_string, form.min_duration.data,
              form.max_duration.data, form.min_calories.data,
