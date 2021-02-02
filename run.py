@@ -45,13 +45,14 @@ def main(targets):
             user_item_interactions_path = data_params['user_item_interactions_path'],
             fbworkouts_meta_path = data_params['fbworkouts_meta_path'],
             all_links_pickle_path = data_params['all_links_pickle_path'],
-            youtube_csv_path = data_params['youtube_csv_path']
+            youtube_csv_path = data_params['youtube_csv_path'],
+            d=15
             )
         print("Data preprocessing done.")
 
     if 'model' in targets:
         data = get_data(data_params['user_item_interactions_path'])
-        run_models(data)
+        run_models(data, k=20)
 
     return
 

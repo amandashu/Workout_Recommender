@@ -18,15 +18,15 @@ def top_popular(df, k=None):
         return preds[:k], scores[:k]
 
 
-def get_target_scores(external_indices, scores, dct):
+def get_target_scores(external_indices, scores, item_map):
     """
     Helper function to get input of sklearn ncdg:
     Given movie ids and their popularity score, as well as a dictionary mapping
     external ids to LightFM internal ids, return the list of popularity scores
     by LightFM internal id ordering
     """
-    internal_indices = [dct[i] for i in external_indices]
-    scores_by_internal = np.zeros(len(external_indices))
+    internal_indices = [item_map[i] for i in external_indices]
+    scores_by_internal = np.zeros(len(item_map.values()))
     scores_by_internal.put(internal_indices, scores)
     return scores_by_internal
 

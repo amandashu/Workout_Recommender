@@ -6,9 +6,7 @@ from lightfm import LightFM
 
 def light_fm(df):
     """
-    Takes in user_item_interactions data frame, and output the k most commented
-    on workouts and their respective scores (# of comments)
-    :param df: data dict
+    Takes in data dictionary, and output lightfm's predictions for every user
     """
     model = LightFM(loss='warp')
 

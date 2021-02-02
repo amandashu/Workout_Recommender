@@ -120,20 +120,20 @@ def create_metadata(fbworkouts_path, all_links_pickle_path, fbworkouts_meta_path
     meta_df.to_csv(fbworkouts_meta_path, index=False)
 
 
-def create_fbcommenters(comments_path, fbcommenters_path):
+def create_fbcommenters(comments_path, fbcommenters_path, d=0):
     """
     Takes in comments.csv and outputs fbcommenters.csv, which assigns id to each
     hash_id-profile combination.
 
-    Note: only fbcommenters who commented at least 5 times are kept
+    Note: only fbcommenters who commented at least d times are kept
     """
     comments_df = pd.read_csv(comments_path, usecols=['hash_id'])
     counts= comments_df.groupby('hash_id').size()
-    more_than_five = counts[counts >= 5].index
+    more_than_d = counts[counts >= d].index
 
     dct = {
-        'hash_id': more_than_five,
-        'user_id': np.arange(1, len(more_than_five) + 1)
+        'hash_id': more_than_d,
+        'user_id': np.arange(1, len(more_than_d) + 1)
     }
 
     out = pd.DataFrame(dct)
@@ -149,7 +149,7 @@ def create_UI_interactions(comments_path, fbcommenters_path, user_item_interacti
     interactions_df = merged_df[['user_id','workout_id']].sort_values(['user_id','workout_id'])
     interactions_df.to_csv(user_item_interactions_path, index=False)
 
-def fb_preprocessing(fbworkouts_path, fbworkouts_clean_path, comments_path, fbcommenters_path, user_item_interactions_path, fbworkouts_meta_path, all_links_pickle_path, youtube_csv_path):
+def fb_preprocessing(fbworkouts_path, fbworkouts_clean_path, comments_path, fbcommenters_path, user_item_interactions_path, fbworkouts_meta_path, all_links_pickle_path, youtube_csv_path, d=5):
     # create data/preprocessed folder if it doesn't yet exist
     dirname = os.path.dirname(fbworkouts_clean_path)
     if not os.path.exists(dirname):
@@ -157,5 +157,5 @@ def fb_preprocessing(fbworkouts_path, fbworkouts_clean_path, comments_path, fbco
 
     clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path)
     create_metadata(fbworkouts_path, all_links_pickle_path, fbworkouts_meta_path, youtube_csv_path)
-    create_fbcommenters(comments_path, fbcommenters_path)
+    create_fbcommenters(comments_path, fbcommenters_path, d)
     create_UI_interactions(comments_path, fbcommenters_path, user_item_interactions_path)
