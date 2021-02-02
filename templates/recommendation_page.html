@@ -1,24 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
 
+<script src="{{ url_for('static',filename='js/overlay.js') }}"></script>
+
   <!-- Page Content -->
-  <div class="">
+  <div class="container">
     <div class="container-fluid">
       <div class="row text-center">
-        <div class="col-lg-1 col-md-6 mb-4"></div>
-        <div class=col-lg-10>
-          
+        <div class=col>      
           <header class="jumbotron my-4">
             <h1 class="display-3">Hello {{ g.user['name'] }}!</h1>
-            <p class="lead">Try our recommended daily routine! This routine is the one that we think best fits you.</p>
+            <p class="lead">Choose from one of our workout filtering options. You can either choose recommendations personalized for you, the most popular workouts amongst
+              all users, or workouts at random!
+            </p>
             
-            <form id="engine_select_form" action="/" method="POST" enctype="multipart/form-data">
-              <select id="rec-engine" name="engine">
+            <form id="engine_select_form" class="form-inline justify-content-center mr-2" action="/" method="POST" enctype="multipart/form-data">
+              <select class="form-control form-control-lg "id="rec-engine" name="engine">
                 <option value="random">Random</option>
-                <option value="toppop">TopPop</option>
-                <option value="lightfm">LightFM</option>
+                <option value="toppop">Most Popular</option>
+                <option value="lightfm">Recommmended for You</option>
               </select>
-              <input href="#" class="btn btn-primary btn-lg" type="submit" value="Start workout!">
+              <input href="#" class="btn btn-primary btn-lg ml-2" type="submit" value="Find Workouts!">
             </form>
 
             <script>
@@ -33,56 +35,69 @@
             </script>
           </header>
         </div>
-        <div class="col-lg-1 col-md-6 mb-4"></div>
       </div>
       <!-- Jumbotron Header -->
 
     </div>
 
-    <!-- Page Features -->
-    <div class="container-fluid">
+    <!-- Video Overlay (this is hidden by default) -->
+    <div id="overlay-display" class="overlay">
+      <div class="container-fluid">
         <div class="row text-center">
-          <div class="col-lg-1 col-md-6 mb-4"></div>
-          {% for i, w in workouts.iloc[:5].iterrows() %}
-            <div class="col-lg-2 col-md-6 mb-4">
-              <div class="card h-100">
-                <img class="card-img-top cropped-yt-thumb" src="{{'https://img.youtube.com/vi/' + w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') + '/0.jpg'}}" alt="">
+          <div class="col-lg-1 col-md-6"></div>
+          <div class="col-lg-10 col-md-6">
+            <!-- Button to close the overlay navigation -->     
+            <!-- Overlay content -->
+            <div class="overlay-content" style="margin: 30 30 30 30;">
+      
+              <div class="card h-100 card-overlay">
                 <div class="card-body">
-                  <h4 class="card-title">{{ w['workout_title'] }}</h4>
-                  <p class="card-text">Equipment: {{ w['equipment'] }} <br> Training Type: {{ w['training_type'] }} <br>  Body Focus: {{ w['body_focus'] }}</p>
+                  <h4 id="overlay-workout-title" class="card-title display-5">Loading...</h4>
+                  <iframe class="card-img-top" id="overlay-video" style="width: 560px !important; height: 315px !important;" src="" frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen ></iframe>
+                  <p id="overlay-workout-text" class="card-text">Loading...</p>
                 </div>
                 <div class="card-footer">
-                  <a href="{{ w['youtube_link'] }}" class="btn btn-primary" target="_blank">Start Workout!</a>
+                  <a class="btn btn-primary">Like</a>
+                  <a class="btn btn-primary">Dislike</a>
+                  <a class="btn btn-primary" onclick="overlayNextVideo()">Skip</a>
+                  <a class="btn btn-primary" id="overlay-fb-link" href="#" target="_blank">FitnessBlender Page</a>
+                  <a class="btn btn-primary closebtn" href="javascript:void(0)" onclick="closePlayerOverlay()">Close</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-1 col-md-6 mb-4"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page Features -->
+    <div class="container">
+      <div class="container-fluid">
+        <div class="row text-center">
+          {% for i, w in workouts.iloc[:9].iterrows() %}
+            <div class="col-lg-4 col-md-6 mb-4 workout-card">
+              <div class="card h-100">
+                <img class="cropped-yt-thumb card-img-top"  src="{{'https://img.youtube.com/vi/' + w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') + '/0.jpg'}}" alt="">
+                <div class="card-body">
+                  <h4 id="workout-title-index-{{ i }}" class="card-title">{{ w['workout_title'] }}</h4>
+                  <p id="workout-text-index-{{ i }}" class="card-text">Equipment: {{ w['equipment'] }} <br> Training Type: {{ w['training_type'] }} <br>  Body Focus: {{ w['body_focus'] }}</p>
+                </div>
+                <div class="card-footer">
+                  <!--{{ w['youtube_link'] }}-->
+                  <a onclick='openPlayerOverlay("{{ i }}")' class="btn btn-primary">Start Workout!</a>
+                  <!--Video Embed Driver Below ( these are hidden from view and referenced by overlay.js :) )-->
+                  <span id="video-index-{{ i }}"style="display: none;">{{'https://www.youtube-nocookie.com/embed/' + w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') }}</span>
+                  <span id="fb-link-index-{{ i }}" style="display: none;">{{ w['fb_link'] }}</span>
                 </div>
               </div>
             </div>
           {% endfor %}
-          <div class="col-lg-1 col-md-6 mb-4"></div>
         </div>
     </div>
-
-    <div class="container-fluid">
-      <div class="row text-center">
-        <div class="col-lg-1 col-md-6 mb-4"></div>
-        {% for i, w in workouts.iloc[5:10].iterrows() %}
-          <div class="col-lg-2 col-md-6 mb-4">
-            <div class="card h-100">
-              <img class="card-img-top cropped-yt-thumb" src="{{'https://img.youtube.com/vi/' + w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') + '/0.jpg'}}" alt="">
-              <div class="card-body">
-                <h4 class="card-title">{{ w[1] }}</h4>
-                <p class="card-text">Equipment: {{ w['equipment'] }} <br> Training Type: {{ w['training_type'] }} <br>  Body Focus: {{ w['body_focus'] }}</p>
-              </div>
-              <div class="card-footer">
-                <a href="{{ w['youtube_link'] }}" class="btn btn-primary" target="_blank">Start Workout!</a>
-              </div>
-            </div>
-          </div>
-        {% endfor %}
-        <div class="col-lg-1 col-md-6 mb-4"></div>
-      </div>
     </div>
 
-    <!-- /.row -->
 
   </div>
   <!-- /.container -->
