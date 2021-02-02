@@ -2,10 +2,6 @@
 {% block content %}
 
   <!-- Page Content -->
-  <head>
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
-  </head>
-
   <div class="">
     <div class="container-fluid">
       <div class="row text-center">
@@ -15,18 +11,20 @@
           <header class="jumbotron my-4">
             <h1 class="display-3">Hello {{ g.user['name'] }}!</h1>
             <p class="lead">Try our recommended daily routine! This routine is the one that we think best fits you.</p>
-            <a href="#" class="btn btn-primary btn-lg">Start Workout!</a>
-
-            <select id="rec-engine">
-              <option value="random">Random</option>
-              <option value="toppop">TopPop</option>
-              <option value="lightfm">LightFM</option>
-            </select>
+            
+            <form id="engine_select_form" action="/" method="POST" enctype="multipart/form-data">
+              <select id="rec-engine" name="engine">
+                <option value="random">Random</option>
+                <option value="toppop">TopPop</option>
+                <option value="lightfm">LightFM</option>
+              </select>
+              <input href="#" class="btn btn-primary btn-lg" type="submit" value="Start workout!">
+            </form>
 
             <script>
               document.getElementById('rec-engine').onchange = function() {
                 localStorage.setItem('selectedtem', document.getElementById('rec-engine').value);
-                window.location.reload();
+                //window.location.reload();
               };
 
               if (localStorage.getItem('selectedtem')) {

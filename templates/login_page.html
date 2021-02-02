@@ -5,6 +5,7 @@
 
     <!-- Jumbotron Header -->
     <header class="jumbotron my-4">
+      <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
       <h1 class="display-4">Welcome (Back)!</h1>
       <p class="lead">If you have any questions or need to reset your email or password, please do not hesitate to <a href="{{ url_for('contact_page') }}">contact us</a>.</p>
       <form method="POST" action="{{ url_for('login_page') }}">

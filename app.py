@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, session, g
+from flask import Flask, render_template, redirect, url_for, session, g, request
 from src.app.forms import RegistrationForm, LoginForm
 from flask_mysqldb import MySQL
 from flask_bcrypt import Bcrypt
@@ -91,7 +91,7 @@ def login_page():
     return render_template('login_page.html', form=form)
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def recommendation_page():
     # if user is not logged in, redirect to login page
     if g.user is None:
@@ -112,9 +112,20 @@ def recommendation_page():
     #     query = "SELECT * FROM fbworkouts_meta WHERE workout_id in (" + str(values)[1:-1] + ')'
     #     list.append(pd.read_sql_query(query , db.connection))
 
-    query = "SELECT * FROM fbworkouts_meta ORDER BY RAND() LIMIT 10"
-    results = pd.read_sql_query(query , db.connection)
-    return render_template('recommendation_page.html', workouts=results)
+    if request.method == "POST":
+        rec_engine = request.form.get("engine", "random")
+    else:
+        rec_engine = request.form.get("engine", "what")
+
+    print(rec_engine)
+    if rec_engine == "random":
+        query = "SELECT * FROM fbworkouts_meta ORDER BY RAND() LIMIT 10"
+    else:
+        query = "SELECT * FROM fbworkouts_meta ORDER BY RAND() LIMIT 0"
+
+    results = pd.read_sql_query(query, db.connection)
+    return render_template("recommendation_page.html", engine = rec_engine, workouts=results)
+
 
 
 @app.route('/logout')
@@ -132,13 +143,13 @@ def about_page():
 def contact_page():
     return render_template('contact_page.html')
 
-import os
-from flask import send_from_directory
-
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
-                               
+
+import os
+from flask import send_from_directory
+                   
 if __name__ == '__main__':
     app.run(debug=True)
