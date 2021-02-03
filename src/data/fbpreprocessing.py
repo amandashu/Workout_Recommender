@@ -20,7 +20,7 @@ def clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path):
     Takes in fbworkouts.csv and outputs fbworkouts_clean.csv
     """
     # reads workouts_df
-    workouts_df = pd.read_csv(fbworkouts_path)
+    workouts_df = pd.read_csv(fbworkouts_path, encoding="ISO-8859-1")
 
     # extracts the minutes from the column
     duration = workouts_df.duration.str.split().apply(lambda x: x[0] if x[1] == 'Minutes' else x)
@@ -70,7 +70,7 @@ def clean_fbworkouts(fbworkouts_path, fbworkouts_clean_path):
     # there is both a workout type and equipment named kettlebell, meaning that there will be overlap
     # therefore, we dropped the kettlebell from the "training_type", since you won't be doing
     # kettlebell exercises without the kettlebell; kettlebell will be encoded in the equipment section
-    workouts_df = workouts_df.drop(['kettlebell'], axis=1)
+    workouts_df = workouts_df.drop(['kettlebell'], axis=1, errors='ignore')
     workouts_df = OHEListEncoder(workouts_df, 'equipment_list')
 
     workouts_df = workouts_df.drop(['youtube_link'], axis=1)
@@ -87,7 +87,7 @@ def create_metadata(fbworkouts_path, all_links_pickle_path, fbworkouts_meta_path
     workout_fb_url = pd.Series(links)
 
     # loads in workout url and youtube url from fbworkouts.csv
-    workouts_df = pd.read_csv(fbworkouts_path)
+    workouts_df = pd.read_csv(fbworkouts_path, encoding="ISO-8859-1")
     workout_ids = workouts_df.workout_id
     workout_yt_url = workouts_df.youtube_link
 

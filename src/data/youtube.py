@@ -16,7 +16,7 @@ def get_youtube(fbworkouts_path, youtube_csv_path):
     with open('config/api_key.json') as fh:
         api_key = json.load(fh)['api_key']
     service = build('youtube','v3', developerKey=api_key)
-    fbworkouts = pd.read_csv(fbworkouts_path)
+    fbworkouts = pd.read_csv(fbworkouts_path,encoding="ISO-8859-1")
 
     # intialize dct for output dataframe
     columns = ['title','published_at','view_count','like_count',
