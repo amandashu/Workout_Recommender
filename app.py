@@ -4,7 +4,7 @@ from flask_mysqldb import MySQL
 from flask_bcrypt import Bcrypt
 import json
 import pandas as pd
-from src.app.rec_list import filter
+from src.app.recommendations import filter
 
 app = Flask(__name__)
 
@@ -100,7 +100,7 @@ def recommendation_page():
     # # the model's predictions (list of workout_id)
     # query = "SELECT workout_id FROM fbworkouts ORDER BY RAND() LIMIT 10"
     # model_predictions = list(pd.read_sql_query(query , db.connection)['workout_id'])
-    # 
+    #
     # # get the workouts df for the predicted workouts
     # query = "SELECT * FROM fbworkouts WHERE workout_id in (" + str(model_predictions)[1:-1] +")"
     # workouts = pd.read_sql_query(query , db.connection)
@@ -150,6 +150,6 @@ def favicon():
 
 import os
 from flask import send_from_directory
-                   
+
 if __name__ == '__main__':
     app.run(debug=True)
