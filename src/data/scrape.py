@@ -153,8 +153,7 @@ def scrape_data(chromedriver_path, all_links_pickle_path, fbworkouts_path, comme
     chrome_options.experimental_options["prefs"] = chrome_prefs
     chrome_prefs["profile.default_content_settings"] = {"images": 2}
     driver = webdriver.Chrome(chromedriver_path, options=chrome_options)
-    #parser = 'html5lib' # alternative "lxml", use this if you get a parser error
-    parser = 'lxml'
+    parser = 'html5lib' # alternative "lxml", use this if you get a parser error
 
     # scrape all workout links to all_links.pickle if all_links.pickle doesn't yet exist
     if not os.path.isfile(all_links_pickle_path):
