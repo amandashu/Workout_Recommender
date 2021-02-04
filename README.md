@@ -27,6 +27,13 @@ The data is scraped from https://www.fitnessblender.com/. We are using the data 
 
 **Templates**: Holds html files for the various endpoints.
 
+### Set Up Project Environment
+There are two ways to run this project: 1) Docker (preferred) or 2) Locally
+1) To run in Docker:
+  a) Pull the container with `docker pull nkanishka/workout-recommender`
+  b) Run the container using:
+    * General Use: `docker run -it -p 5000:5000 workout_recommender`
+    * DSMLP Only: `launch-scipy-ml.sh -i nkanishka/workout_recommender_dsmlp -P Always` 
 
 ### Run the Project Stages
 - To get the data, run `python run.py data`. This scrapes the data and cleans the data and saves these files into `/data/raw` and `data/preprocessed` respectively.
