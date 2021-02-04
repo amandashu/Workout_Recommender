@@ -12,7 +12,7 @@ from model_preprocessing import get_data
 from run_models import run_models
 from youtube import get_youtube
 
-def run_data(data_params, d):
+def gather_data(data_params):
     with open('config/chromedriver.json') as fh:
         chromedriver_path = json.load(fh)['chromedriver_path']
 
@@ -28,6 +28,7 @@ def run_data(data_params, d):
                 data_params['youtube_csv_path'])
     print("Querying done")
 
+def preprocess(data_params, d):
     print("Preprocessing...")
     fb_preprocessing(
         fbworkouts_path = data_params['fbworkouts_path'],
@@ -56,7 +57,7 @@ def main(targets):
         with open('config/test-params.json') as fh:
             data_params = json.load(fh)
 
-        run_data(data_params, d=0)
+        preprocess(data_params, d=0)
         run_model(data_params, k=None)
         return
 
@@ -64,12 +65,14 @@ def main(targets):
         data_params = json.load(fh)
 
     if 'all' in targets:
-        run_data(data_params, d=15)
+        gather_data(data_params)
+        preprocess(data_params, d=15)
         run_model(data_params, k=20)
         return
 
     if 'data' in targets:
-        run_data(data_params, d=15)
+        gather_data(data_params)
+        preprocess(data_params, d=15)
 
     if 'model' in targets:
         run_model(data_params, k=20)

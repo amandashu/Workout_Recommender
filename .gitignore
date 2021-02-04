@@ -10,8 +10,6 @@ config/db_config.json
 config/api_key.json
 test
 testdata/preprocessed/*
-testdata/raw/*
-!testdata/raw/all_links.pickle
 
 # pycache
 __pycache__

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 git clone https://github.com/amandashu/Workout_Recommender.git
 cd Workout_Recommender
-git checkout NK_docker
+#git checkout NK_docker
 echo ""
 echo "*********************************"
 echo "  'python run.py all' to scrape and process data,"

@@ -19,7 +19,7 @@ The data is scraped from https://www.fitnessblender.com/. We are using the data 
 - The `src/utils` folder has `clean.py` which implements the standard target `clean`.
 - The `src/app` folder holds files for the web application. `forms.py` contains wtforms classes for registration/login pages. `recommendations.py` holds code for filtering user preferences and building recommendation lists. `register.py` contains a helper function to create the sql insertion statement for registering users.
 
-**Config**: `data-params.json` has file paths outputs for data collection/preprocessing. To webscrape, this folder should also include `chromedriver.json`. To gather Youtube data, `api_key.json` specifies the api key. To run the app, `db_config.json` has the database configurations.
+**Config**: `data-params.json` has file paths outputs for data collection/preprocessing and `test-params.json` has the data paths for the test target. To webscrape, this folder should also include `chromedriver.json`. To gather Youtube data, `api_key.json` specifies the api key. To run the app, `db_config.json` has the database configurations.
 
 **Notebook**: `eda.ipynb` is a notebook with exploratory data analysis on scraped data. `models.ipynb` is a notebook reporting the recommendation models' performance across various parameters.
 
@@ -27,13 +27,20 @@ The data is scraped from https://www.fitnessblender.com/. We are using the data 
 
 **Templates**: Holds html files for the various endpoints.
 
+**Testdata/raw**: These are fake datasets meant to be used with the test target.
+
 ### Set Up Project Environment
-There are two ways to run this project: 1) Docker (preferred) or 2) Locally
-1) To run in Docker:
-  a) Pull the container with `docker pull nkanishka/workout-recommender`
-  b) Run the container using:
-    * General Use: `docker run -it -p 5000:5000 workout_recommender`
-    * DSMLP Only: `launch-scipy-ml.sh -i nkanishka/workout_recommender_dsmlp -P Always` 
+There are two ways to run this project: a) Docker (preferred) or b) Locally <br>
+a) To Run in Docker:<br>
+  1) Pull the container with `docker pull nkanishka/workout-recommender`
+  2) Run the container using:
+  * General Use: `docker run -it -p 5000:5000 workout_recommender`
+  * DSMLP Only: `launch-scipy-ml.sh -i nkanishka/workout_recommender_dsmlp -P Always` <br><br>`kubectl port-forward <Kubernates Cluster Name> 5000`<br><br> `ssh -N -L 5000:127.0.0.1:5000 <AD Name>@dsmlp-login.ucsd.edu`
+  3) Inside container/cluster, type `cd Workout_Recommender`. Note that in the DSMLP environment, you will need to manually clone this repo.
+  4) If using website, go to [localhost:5000](localhost:5000)
+    <br>
+
+b) To run locally, install requiremnents.txt into a virtualenv. Make sure you have Python 3.8+ and Pip installed.
 
 ### Run the Project Stages
 - To get the data, run `python run.py data`. This scrapes the data and cleans the data and saves these files into `/data/raw` and `data/preprocessed` respectively.
@@ -42,6 +49,6 @@ There are two ways to run this project: 1) Docker (preferred) or 2) Locally
 - To run model results, run `python run.py model`. This takes in the preprocessed data, trains the models, and prints out the NDCG scores for each model.
 - Standard target `clean` is implemented, and it will delete the `data` folder.
 - Standard target `all` is implemented, and it equivalent to running `python run.py data model`.
-- Standard target `test` is implemented, and it scrapes two workouts links, and runs the rest of the data preprocessing/modeling on that data. The purpose of this target is purely to check the implementation of the code.
+- Standard target `test` is implemented, and runs the data preprocessing and modeling results on the test data. The purpose of this target is purely to check the implementation of the code.
 - Use `python app.py` to run the app locally.
   - Note: this assumes that there is a file `config/db_config.json`, which has database host, user, password, and name information.
