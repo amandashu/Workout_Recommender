@@ -7,6 +7,7 @@ import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
@@ -144,9 +145,16 @@ def scrape_data(chromedriver_path, all_links_pickle_path, fbworkouts_path, comme
             cwriter.writerow({x:x for x in cheaders})
 
     #driver variable
-    driver = webdriver.Chrome(chromedriver_path)
+    chrome_options = Options()  
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_prefs = {}
+    chrome_options.experimental_options["prefs"] = chrome_prefs
+    chrome_prefs["profile.default_content_settings"] = {"images": 2}
+    driver = webdriver.Chrome(chromedriver_path, options=chrome_options)
     parser = 'html5lib' # alternative "lxml", use this if you get a parser error
-
+    
     # scrape all workout links to all_links.pickle if all_links.pickle doesn't yet exist
     if not os.path.isfile(all_links_pickle_path):
         get_workout_links(driver, all_links_pickle_path)

@@ -29,6 +29,19 @@ The data is scraped from https://www.fitnessblender.com/. We are using the data 
 
 **Testdata/raw**: These are fake datasets meant to be used with the test target.
 
+### Set Up Project Environment
+There are two ways to run this project: a) Docker (preferred) or b) Locally <br>
+a) To Run in Docker:<br>
+  1) Pull the container with `docker pull nkanishka/workout-recommender`
+  2) Run the container using:
+  * General Use: `docker run -it -p 5000:5000 workout_recommender`
+  * DSMLP Only: `launch-scipy-ml.sh -i nkanishka/workout_recommender_dsmlp -P Always` <br><br>`kubectl port-forward <Kubernates Cluster Name> 5000`<br><br> `ssh -N -L 5000:127.0.0.1:5000 <AD Name>@dsmlp-login.ucsd.edu`
+  3) Inside container/cluster, type `cd Workout_Recommender`. Note that in the DSMLP environment, you will need to manually clone this repo.
+  4) If using website, go to [localhost:5000](localhost:5000)
+    <br>
+
+b) To run locally, install requiremnents.txt into a virtualenv. Make sure you have Python 3.8+ and Pip installed.
+
 ### Run the Project Stages
 - To get the data, run `python run.py data`. This scrapes the data and cleans the data and saves these files into `/data/raw` and `data/preprocessed` respectively.
   - Note: for scraping, this assumes that there is a file `config/chromedriver.json` that specifies where the path to the downloaded chromedriver.exe file for your Chrome version lies in the attribute `chromedriver_path`.
