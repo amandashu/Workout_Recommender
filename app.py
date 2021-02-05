@@ -1,3 +1,6 @@
+import os
+from flask import send_from_directory
+from src.app.register import register_user
 from flask import Flask, render_template, redirect, url_for, session, g, request
 from src.app.forms import RegistrationForm, LoginForm
 from flask_mysqldb import MySQL
@@ -24,14 +27,14 @@ bcrypt = Bcrypt(app)
 @app.before_request
 def before_request():
     if 'user_id' in session:
-        query = "SELECT * FROM users WHERE user_id = " + str(session['user_id'])
-        results = pd.read_sql_query(query , db.connection)
+        query = "SELECT * FROM users WHERE user_id = " + \
+            str(session['user_id'])
+        results = pd.read_sql_query(query, db.connection)
         g.user = results.iloc[0]
     else:
         g.user = None
 
 
-from src.app.register import register_user
 @app.route('/register', methods=['GET', 'POST'])
 def registration_page():
     form = RegistrationForm()
@@ -115,17 +118,30 @@ def recommendation_page():
     if request.method == "POST":
         rec_engine = request.form.get("engine", "random")
     else:
-        rec_engine = request.form.get("engine", "what")
+        rec_engine = request.form.get("engine", "random")
 
     print(rec_engine)
     if rec_engine == "random":
         query = "SELECT * FROM fbworkouts_meta ORDER BY RAND() LIMIT 10"
+    elif rec_engine == "toppop":
+        query = """SELECT *
+                FROM workout.fbworkouts_meta
+                WHERE workout.fbworkouts_meta.workout_id IN (
+                    SELECT TEMP.workout_id
+                    FROM
+                    (
+                        SELECT workout_id, COUNT(workout_id)
+                        FROM workout.user_item_interaction
+                        GROUP BY workout_id
+                        ORDER BY 2 DESC
+                        LIMIT 10
+                    ) AS TEMP
+                )"""
     else:
         query = "SELECT * FROM fbworkouts_meta ORDER BY RAND() LIMIT 0"
 
     results = pd.read_sql_query(query, db.connection)
-    return render_template("recommendation_page.html", engine = rec_engine, workouts=results)
-
+    return render_template("recommendation_page.html", engine=rec_engine, workouts=results)
 
 
 @app.route('/logout')
@@ -143,13 +159,12 @@ def about_page():
 def contact_page():
     return render_template('contact_page.html')
 
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
-import os
-from flask import send_from_directory
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
