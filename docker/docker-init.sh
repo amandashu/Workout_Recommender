@@ -4,12 +4,6 @@ cd Workout_Recommender
 #git checkout NK_docker
 echo ""
 echo "*********************************"
-echo "Please note that this repo pulls from master, and may be broken as such."
-echo "We recommend you go onto the site, and 'checkout' a production branch"
-echo "*********************************"
-echo ""
-echo ""
-echo "*********************************"
 echo "  'python run.py all' to scrape and process data,"
 echo "  'python run.py test' to test, "
 echo "  'python app.py' to serve website (port 5000)"
