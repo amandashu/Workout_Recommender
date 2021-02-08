@@ -52,6 +52,6 @@ RUN pip3 install --no-cache-dir -r requirements-docker.txt
 
 RUN echo "alias python=python3" >> ~/.bash_aliases
 
-COPY /docker-init.sh .
-RUN chmod 755 docker-init.sh
-CMD ["./docker-init.sh"]
+#COPY /docker-init.sh .
+#RUN chmod 755 docker-init.sh
+#CMD ["./docker-init.sh"]
