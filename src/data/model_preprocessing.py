@@ -11,11 +11,14 @@ from sklearn.model_selection import train_test_split
 
 def build_dataset(user_item_interactions_path, neg_sample=False):
     """
-    Takes in user/item interactions path and fits LightFM dataset object.
+    Takes in user/item interactions path or a dataframe from SQL and fits LightFM dataset object.
     Returns user-item interaction as pandas dataframe, LightFM dataset object,
-    and dictionary that maps the external ids to LightFM's internal item indices
+    and dictionary that maps the external ids to LightFM's internal user and item indices
     """
-    user_item_interactions = pd.read_csv(user_item_interactions_path)
+    if type(build_dataset) == str:
+        user_item_interactions = pd.read_csv(user_item_interactions_path)
+    else:
+        user_item_interactions = user_item_interactions_path
 
     dataset = Dataset()
     dataset.fit(user_item_interactions['user_id'].tolist(),
@@ -24,8 +27,9 @@ def build_dataset(user_item_interactions_path, neg_sample=False):
     num_users, num_items = dataset.interactions_shape()
     print('Num users: {}, num_items {}.'.format(num_users, num_items))
 
+    user_map = dataset.mapping()[0]
     item_map = dataset.mapping()[2]
-    return user_item_interactions, dataset, item_map
+    return user_item_interactions, dataset, user_map, item_map
 
 
 def build_ui_matrix(df, dataset):
@@ -44,7 +48,7 @@ def get_data(user_item_interactions_path):
     Takes in user-item interactions path and returns dictionary of various
     dataframes/matrices
     """
-    user_item_interactions, dataset, item_map = build_dataset(
+    user_item_interactions, dataset, user_map, item_map = build_dataset(
         user_item_interactions_path)
 
     train_df, test_df = train_test_split(user_item_interactions, train_size=0.7, random_state=42)
@@ -57,6 +61,7 @@ def get_data(user_item_interactions_path):
         'test_df': test_df,
         'train_ui_matrix': train_ui_matrix,
         'test_ui_matrix': test_ui_matrix,
+        'user_map': user_map,
         'item_map': item_map
     }
     return data_dct
