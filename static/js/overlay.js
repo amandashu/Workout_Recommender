@@ -8,28 +8,6 @@ function overlayNextVideo() {
     openPlayerOverlay(currentVideoIndex)
 }
 
-function recordLike(user_id, workout_id) {
-    var mysql = require('mysql');
-    var json = require('../../config/db_config.json');
-
-    var con = mysql.createConnection({
-        host: json['mysql_host'],
-        user: json['mysql_user'],
-        password: json['mysql_password'],
-        database: json['mysql_db']
-    });
-
-    con.connect(function (err) {
-        if (err) throw err;
-        console.log("Connected!");
-        var sql = "INSERT INTO user_item_interaction (user_id, workout_id) VALUES (" + user_id + ", " + workout_id + ")";
-        con.query(sql, function (err, result) {
-            if (err) throw err;
-            console.log("1 record inserted");
-        });
-    });
-}
-
 function openPlayerOverlay(videoIndex) {
     currentVideoIndex = parseInt(videoIndex)
     ytURL = document.getElementById("video-index-" + videoIndex).textContent
@@ -44,7 +22,7 @@ function openPlayerOverlay(videoIndex) {
 
     document.getElementById("overlay-display").style.display = "block";
 
-}
+    }
 
 
 function closePlayerOverlay() {

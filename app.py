@@ -1,5 +1,3 @@
-from src.models.light_fm import light_fm, evaluate, pred_i
-from src.data.model_preprocessing import get_data
 import os
 from flask import send_from_directory
 from src.app.register import register_user
@@ -10,12 +8,6 @@ from flask_bcrypt import Bcrypt
 import json
 import pandas as pd
 from src.app.recommendations import filter
-
-import sys
-
-sys.path.insert(0, 'src/data')
-sys.path.insert(0, 'src/models')
-
 
 app = Flask(__name__)
 
@@ -128,6 +120,7 @@ def recommendation_page():
     else:
         rec_engine = request.form.get("engine", "random")
 
+    print(rec_engine)
     if rec_engine == "random":
         query = "SELECT * FROM fbworkouts_meta ORDER BY RAND() LIMIT 10"
     elif rec_engine == "toppop":
@@ -145,14 +138,7 @@ def recommendation_page():
                     ) AS TEMP
                 )"""
     else:
-        uii = pd.read_sql_query(
-            "SELECT * FROM user_item_interaction", db.connection)
-        data = get_data(uii)
-        
-        # sort predictions, get last (most relevant) K items, resort
-        # TODO change 69 to session['user_id'
-        pred = pred_i(data, 69)[-10:][::-1] #session['user_id']
-        query = "SELECT * FROM fbworkouts_meta WHERE workout_id IN (" + str(list(pred))[1:-1] + ")"
+        query = "SELECT * FROM fbworkouts_meta ORDER BY RAND() LIMIT 0"
 
     results = pd.read_sql_query(query, db.connection)
     return render_template("recommendation_page.html", engine=rec_engine, workouts=results)
