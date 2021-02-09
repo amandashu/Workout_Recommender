@@ -11,14 +11,21 @@ from src.app.recommendations import filter
 
 app = Flask(__name__)
 
+is_prod = os.environ.get('IS_HEROKU', None)
+
+if is_prod:
+    app.config['MYSQL_HOST'] = os.environ.get('MYSQL_HOST')
+    app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER')
+    app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD')
+    app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB')
+else:
+    db_config = json.load(open('./config/db_config.json'))
+    app.config['MYSQL_HOST'] = db_config['mysql_host']
+    app.config['MYSQL_USER'] = db_config['mysql_user']
+    app.config['MYSQL_PASSWORD'] = db_config['mysql_password']
+    app.config['MYSQL_DB'] = db_config['mysql_db']
+
 app.config['SECRET_KEY'] = 'dev'
-
-db_config = json.load(open('./config/db_config.json'))
-
-app.config['MYSQL_HOST'] = db_config['mysql_host']
-app.config['MYSQL_USER'] = db_config['mysql_user']
-app.config['MYSQL_PASSWORD'] = db_config['mysql_password']
-app.config['MYSQL_DB'] = db_config['mysql_db']
 
 db = MySQL(app)
 bcrypt = Bcrypt(app)
