@@ -9,11 +9,10 @@
     <div class="row text-center">
       <div class=col>
         <header class="jumbotron my-4">
-          <h1 class="display-3">Hello {{ g.user['name'] }}!</h1>
-          <p class="lead">Choose from one of our workout filtering options. You can either choose recommendations
+          <h1 class="display-3"> Hello {{ g.user['name'] }}!</h1>
+          <p class="lead"> Choose from one of our workout filtering options. You can either choose recommendations
             personalized for you, the most popular workouts amongst
-            all users, or workouts at random!
-          </p>
+            all users, or workouts at random!</p>
 
           <form id="engine_select_form" class="form-inline justify-content-center mr-2" action="/" method="POST"
             enctype="multipart/form-data">
@@ -22,7 +21,7 @@
               <option value="toppop">Most Popular</option>
               <option value="lightfm">Recommmended for You</option>
             </select>
-            <input href="#" class="btn btn-primary btn-lg ml-2" type="submit" value="Find Workouts!">
+            <input href="#" class="btn btn-primary btn-lg ml-2" type="submit" value="Find Workouts!"> </input>
           </form>
 
           <script>
@@ -38,8 +37,6 @@
         </header>
       </div>
     </div>
-    <!-- Jumbotron Header -->
-
   </div>
 
   <!-- Video Overlay (this is hidden by default) -->
@@ -78,32 +75,38 @@
 
   <!-- Page Features -->
   <div class="container">
-    <div class="container-fluid">
-      <div class="row text-center">
-        {% for i, w in workouts.iloc[:9].iterrows() %}
-        <div class="col-lg-4 col-md-6 mb-4 workout-card">
-          <div class="card h-100">
-            <img class="cropped-yt-thumb card-img-top"
-              src="{{'https://img.youtube.com/vi/' + w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') + '/0.jpg'}}"
-              alt="">
-            <div class="card-body">
-              <h4 id="workout-title-index-{{ i }}" class="card-title">{{ w['workout_title'] }}</h4>
-              <p id="workout-text-index-{{ i }}" class="card-text">Equipment: {{ w['equipment'] }} <br> Training Type:
-                {{ w['training_type'] }} <br> Body Focus: {{ w['body_focus'] }}</p>
-            </div>
-            <div class="card-footer">
-              <!--{{ w['youtube_link'] }}-->
-              <a onclick='openPlayerOverlay("{{ i }}")' class="btn btn-primary">Start Workout!</a>
-              <!--Video Embed Driver Below ( these are hidden from view and referenced by overlay.js :) )-->
-              <span id="video-index-{{ i }}" style="display: none;">{{'https://www.youtube-nocookie.com/embed/' +
-                w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') }}</span>
-              <span id="fb-link-index-{{ i }}" style="display: none;">{{ w['fb_link'] }}</span>
+    {% for body_focus in rec_dct.keys() %}
+      {% set workouts = rec_dct[body_focus] %}
+      <h1 class="display-3" style="color:white;">{{ body_focus}}</h1>
+
+      <div class="container-fluid">
+        <div class="row text-center">
+          {% for i, w in workouts.iloc[:3].iterrows() %}
+          <div class="col-lg-4 col-md-6 mb-4 workout-card">
+            <div class="card h-100">
+              <img class="cropped-yt-thumb card-img-top"
+                src="{{'https://img.youtube.com/vi/' + w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') + '/0.jpg'}}"
+                alt="">
+              <div class="card-body">
+                <h4 id="workout-title-index-{{ i }}" class="card-title">{{ w['workout_title'] }}</h4>
+                <p id="workout-text-index-{{ i }}" class="card-text">Equipment: {{ w['equipment'] }} <br> Training Type:
+                  {{ w['training_type'] }} <br> Body Focus: {{ w['body_focus'] }}</p>
+              </div>
+              <div class="card-footer">
+                <!--{{ w['youtube_link'] }}-->
+                <a onclick='openPlayerOverlay("{{ i }}")' class="btn btn-primary">Start Workout!</a>
+                <!--Video Embed Driver Below ( these are hidden from view and referenced by overlay.js :) )-->
+                <span id="video-index-{{ i }}" style="display: none;">{{'https://www.youtube-nocookie.com/embed/' +
+                  w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') }}</span>
+                <span id="fb-link-index-{{ i }}" style="display: none;">{{ w['fb_link'] }}</span>
+              </div>
             </div>
           </div>
+          {% endfor %}
         </div>
-        {% endfor %}
-      </div>
+      {% endfor %}
     </div>
+
   </div>
 
 

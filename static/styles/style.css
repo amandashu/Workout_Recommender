@@ -8,7 +8,7 @@ body {
 }
 
 /*
-Attributes below derived from bootstrap.css 
+Attributes below derived from bootstrap.css
 */
 .display-5 {
   font-size: 2.5rem;
@@ -65,11 +65,11 @@ body {
 
 /***
 From: https://www.w3schools.com/howto/howto_js_fullscreen_overlay.asp
-***/ 
+***/
 
 /* The Overlay (background) */
 .overlay {
-  /* Height & width depends on how you want to reveal the overlay (see JS below) */   
+  /* Height & width depends on how you want to reveal the overlay (see JS below) */
   height: 100%;
   width: 100%;
   position: fixed; /* Stay in place */

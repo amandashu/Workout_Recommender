@@ -1,14 +1,10 @@
 import pandas as pd
-"""
-TODO: this currently gets rid of the ordering of predictions -> need to change this
-"""
 
-def filter(workouts, user):
+def create_rec_lists(workouts, user):
     """
     Takes in dataframe of workouts (with fbworkouts schema) and users series
-    (with schema users) and returns a dictionary with body focus as keys and
-    workout ids in lists, with workouts not matching users' preferences filtered
-    out
+    (with users schema) and returns a dictionary with body focus as keys and
+    workout ids in lists, with workouts not matching users' preferences filtered out
     """
     def training_type_helper(str):
         """
@@ -62,10 +58,23 @@ def filter(workouts, user):
     workouts = workouts[workouts['training_type'].apply(training_type_helper)]
     workouts = workouts[workouts.apply(calorie_helper,axis=1)]
 
-    dct = {
-        'upper_body': list(workouts.loc[workouts['body_focus']=='upper_body','workout_id']),
-        'lower_body': list(workouts.loc[workouts['body_focus']=='lower_body','workout_id']),
-        'core': list(workouts.loc[workouts['body_focus']=='core','workout_id']),
-        'total_body': list(workouts.loc[workouts['body_focus']=='total_body','workout_id'])
-    }
+    def get_body_focus(body_focus):
+        """
+        Helper function that takes in a body focus and returns list of workout
+        ids with that body focus
+        """
+        return list(workouts.loc[workouts[body_focus]==1,'workout_id'])
+
+    dct = {x:get_body_focus(x) for x in ['upper_body','lower_body','core','total_body']}
     return dct
+
+
+def get_rec_sorted(workouts_meta, pred_scores):
+    """
+    Helper function that takes in a dataframe (with workouts_meta schema) and
+    a dictionary with (key, value) as (workout id, score) and returns the
+    dataframe sorted by model scores
+    """
+    workouts_meta['score'] = workouts_meta['workout_id'].apply(lambda x:pred_scores[x])
+    sorted = workouts_meta.sort_values('score',ascending=False)
+    return sorted

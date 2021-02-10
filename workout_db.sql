@@ -55,7 +55,6 @@ CREATE TABLE IF NOT EXISTS users
 --      training_type VARCHAR(100),
 --      body_focus VARCHAR(100)
 
-
 -- manually upload fb_workouts.csv into table fbworkouts with the following datatypes
 --      workout_id INT FOREIGN KEY REFERENCES fbworkouts_meta(workout_id),
 --      duration INT,
@@ -66,9 +65,9 @@ CREATE TABLE IF NOT EXISTS users
 --      training_type VARCHAR(300),
 --      body_focus VARCHAR(300),
 --      core INT,
---      lowerbody INT,
---      totalbody INT,
---      upperbody INT,
+--      lower_body INT,
+--      total_body INT,
+--      upper_body INT,
 --      balance_agility INT,
 --      barre INT,
 --      cardiovascular INT,
@@ -93,3 +92,7 @@ CREATE TABLE IF NOT EXISTS users
 --      physioball INT,
 --      sandbag INT,
 --      stationary_bike INT
+
+-- manually upload user_items_interactions.csv (users with less than 5 interactions dropped)
+--      user_id INT
+--      workout_id INT,
