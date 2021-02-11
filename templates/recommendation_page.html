@@ -4,40 +4,30 @@
 <script src="{{ url_for('static',filename='js/overlay.js') }}"></script>
 
 <!-- Page Content -->
-<div class="container">
-  <div class="container-fluid">
-    <div class="row text-center">
-      <div class=col>
-        <header class="jumbotron my-4">
-          <h1 class="display-3"> Hello {{ g.user['name'] }}!</h1>
-          <p class="lead"> Choose from one of our workout filtering options. You can either choose recommendations
-            personalized for you, the most popular workouts amongst
-            all users, or workouts at random!</p>
+  <div class="container">
+    <div class="container-fluid">
+      <div class="row text-center">
+        <div class=col>
+          <header class="jumbotron my-4">
+            <h1 class="display-3"> Hello {{ g.user['name'] }}!</h1>
+            <p class="lead"> Choose from one of our workout filtering options. You can either choose recommendations
+              personalized for you, the most popular workouts amongst
+              all users, or workouts at random!</p>
 
-          <form id="engine_select_form" class="form-inline justify-content-center mr-2" action="/" method="POST"
-            enctype="multipart/form-data">
-            <select class="form-control form-control-lg " id="rec-engine" name="engine">
-              <option value="random">Random</option>
-              <option value="toppop">Most Popular</option>
-              <option value="lightfm">Recommmended for You</option>
-            </select>
-            <input href="#" class="btn btn-primary btn-lg ml-2" type="submit" value="Find Workouts!"> </input>
-          </form>
-
-          <script>
-            document.getElementById('rec-engine').onchange = function () {
-              sessionStorage.setItem('selectedtem', document.getElementById('rec-engine').value);
-              //window.location.reload();
-            };
-
-            if (sessionStorage.getItem('selectedtem')) {
-              document.getElementById('rec-engine').value = sessionStorage.getItem('selectedtem');
-            }
-          </script>
-        </header>
+            <form id="engine_select_form" class="form-inline justify-content-center mr-2" action="/" method="POST"
+              enctype="multipart/form-data">
+              <select class="form-control form-control-lg " id="rec-engine" name="engine" onChange="enableSubmit()">
+                <option value="" disabled selected hidden id="hidden_selection">Choose a Recommender</option>
+                <option value="random">Random</option>
+                <option value="toppop">Most Popular</option>
+                <option value="lightfm">Recommmended for You</option>
+              </select>
+              <input href="#" id="find_workouts" class="btn btn-primary btn-lg ml-2" type="submit" value="Find Workouts!" onClick="findWorkouts()"> </input>
+            </form>
+          </header>
+        </div>
       </div>
     </div>
-  </div>
 
   <!-- Video Overlay (this is hidden by default) -->
   <div id="overlay-display" class="overlay">
@@ -75,41 +65,83 @@
 
   <!-- Page Features -->
   <div class="container">
-    {% for body_focus in rec_dct.keys() %}
-      {% set workouts = rec_dct[body_focus] %}
-      <h1 class="display-3" style="color:white;">{{ body_focus}}</h1>
-
-      <div class="container-fluid">
-        <div class="row text-center">
-          {% for i, w in workouts.iloc[:3].iterrows() %}
-          <div class="col-lg-4 col-md-6 mb-4 workout-card">
-            <div class="card h-100">
-              <img class="cropped-yt-thumb card-img-top"
-                src="{{'https://img.youtube.com/vi/' + w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') + '/0.jpg'}}"
-                alt="">
-              <div class="card-body">
-                <h4 id="workout-title-index-{{ i }}" class="card-title">{{ w['workout_title'] }}</h4>
-                <p id="workout-text-index-{{ i }}" class="card-text">Equipment: {{ w['equipment'] }} <br> Training Type:
-                  {{ w['training_type'] }} <br> Body Focus: {{ w['body_focus'] }}</p>
-              </div>
-              <div class="card-footer">
-                <!--{{ w['youtube_link'] }}-->
-                <a onclick='openPlayerOverlay("{{ i }}")' class="btn btn-primary">Start Workout!</a>
-                <!--Video Embed Driver Below ( these are hidden from view and referenced by overlay.js :) )-->
-                <span id="video-index-{{ i }}" style="display: none;">{{'https://www.youtube-nocookie.com/embed/' +
-                  w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') }}</span>
-                <span id="fb-link-index-{{ i }}" style="display: none;">{{ w['fb_link'] }}</span>
+    <div id="loading" class="text-center" style="display:none;">
+      <img src="{{ url_for('static',filename='images/teodor.gif') }}" alt="loading gif" style="width:400px; heigh:auto;"/>
+      <h1 class="display-5" style="color:white;">Loading your Recommendations...</h1>
+    </div>
+    <div id="recommendations">
+      <!-- div will be empty if no rec_engine is select -->
+      {% if rec_engine %}
+      {% for body_focus in rec_dct.keys() %}
+        {% set workouts = rec_dct[body_focus] %}
+        <h1 class="display-3" style="color:white;">{{ body_focus}}</h1>
+        <div class="container-fluid">
+          <div class="row text-center">
+            {% for i, w in workouts.iloc[:3].iterrows() %}
+            <div class="col-lg-4 col-md-6 mb-4 workout-card">
+              <div class="card h-100">
+                <img class="cropped-yt-thumb card-img-top"
+                  src="{{'https://img.youtube.com/vi/' + w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') + '/0.jpg'}}"
+                  alt="">
+                <div class="card-body">
+                  <h4 id="workout-title-index-{{ i }}" class="card-title">{{ w['workout_title'] }}</h4>
+                  <p id="workout-text-index-{{ i }}" class="card-text">Equipment: {{ w['equipment'] }} <br> Training Type:
+                    {{ w['training_type'] }} <br> Body Focus: {{ w['body_focus'] }}</p>
+                </div>
+                <div class="card-footer">
+                  <!--{{ w['youtube_link'] }}-->
+                  <a onclick='openPlayerOverlay("{{ i }}")' class="btn btn-primary">Start Workout!</a>
+                  <!--Video Embed Driver Below ( these are hidden from view and referenced by overlay.js :) )-->
+                  <span id="video-index-{{ i }}" style="display: none;">{{'https://www.youtube-nocookie.com/embed/' +
+                    w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') }}</span>
+                  <span id="fb-link-index-{{ i }}" style="display: none;">{{ w['fb_link'] }}</span>
+                </div>
               </div>
             </div>
+            {% endfor %}
           </div>
-          {% endfor %}
-        </div>
-      {% endfor %}
+        {% endfor %}
+      </div>
+      {% endif %}
     </div>
-
   </div>
-
-
 </div>
 <!-- /.container -->
 {% endblock content %}
+
+{% block scripts %}
+<script>
+  // function to show loading page
+  function findWorkouts() {
+    let recommendations = document.getElementById("recommendations");
+    recommendations.style.display = "none";
+
+    let loading = document.getElementById("loading");
+    loading.style.display = "block";
+  }
+
+  if ({{ rec_engine | tojson | safe }}) {
+    // keeps rec_engine to be selected aftering submitting
+    document.getElementById('rec-engine').value = {{ rec_engine | tojson | safe }};
+  } else {
+    // gives empty div a height when there rec_engine is not defined
+    // so footer does not move up
+    document.getElementById('recommendations').style.height = '70vh';
+  }
+
+  // disable find workouts button at first
+  let find_workouts = document.getElementById('find_workouts')
+  let hidden_selection = document.getElementById('hidden_selection')
+  if (hidden_selection.selected == true) {
+    find_workouts.disabled = true;
+  }
+
+  // to enable submit button after selecting from rec engine
+  function enableSubmit() {
+    if (hidden_selection.selected == false) {
+      find_workouts.disabled = false;
+    }
+  }
+
+</script>
+{% endblock scripts %}

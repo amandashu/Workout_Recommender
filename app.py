@@ -108,10 +108,14 @@ def recommendation_page():
         return redirect(url_for('login_page'))
 
     # recommendation engine
-    if request.method == "POST":
-        rec_engine = request.form.get("engine", "random")
-    else:
-        rec_engine = request.form.get("engine", "random")
+    # if request.method == "POST":
+    #     rec_engine = request.form.get("engine", "random")
+    # else:
+    #     rec_engine = request.form.get("engine", "random")
+
+    rec_engine = request.form.get("engine")
+    if rec_engine is None:
+        return render_template("recommendation_page.html", rec_engine=None, rec_dct=None)
 
     # get prediction and scores based on chosen model
     if rec_engine == "random":
@@ -150,7 +154,7 @@ def recommendation_page():
         query = "SELECT * FROM fbworkouts_meta WHERE workout_id IN (" + str(pred_dct[body_focus])[1:-1] + ")"
         results = get_rec_sorted(pd.read_sql_query(query, db.connection), pred_scores)
         rec_dct[body_focus.replace('_',' ').capitalize().replace('b','B')] = results
-    return render_template("recommendation_page.html", rec_dct=rec_dct)
+    return render_template("recommendation_page.html", rec_engine=rec_engine, rec_dct=rec_dct)
 
 
 @app.route('/logout')
