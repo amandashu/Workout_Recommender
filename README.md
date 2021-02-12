@@ -4,6 +4,9 @@ A workout video recommender web application.
 
 Authors: Amanda Shu, Peter Peng, Najeem Kanishka
 
+### Website URL
+The website is now live on: https://workout-recommender.herokuapp.com/
+
 ### Data
 The data is scraped from https://www.fitnessblender.com/. We are using the data for academic purposes only.
 
@@ -12,6 +15,8 @@ The data is scraped from https://www.fitnessblender.com/. We are using the data 
 - `run.py`: Run to get data and model results.
 - `app.py`: Runs flask web application.
 - `workout_db.sql`: Contains sql statements for creation of tables in database.
+- `requirements.txt`: Python packages required to run project
+- `wsgi.py & Procfile & runtime.txt`: Entrypoint for Heroku, used in website deployment
 
 **Source**
 - The `src/data` folder contains `scrape.py`, the web-scraping script that writes three data files into `data/raw` folder. `fbpreprocessing.py` takes these raw data files and outputs cleaned/transformed data files into `data/preprocessed` folder. `youtube.py` grabs youtube related data from the Youtube API. `model_preprocessing` reads in preprocessed data and transforms the data into what is needed for model inputs.
