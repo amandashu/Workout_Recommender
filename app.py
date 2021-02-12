@@ -179,6 +179,10 @@ def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
+@app.route('/record_like/<user_id>/<workout_id>')
+def record_like(user_id, workout_id):
+    # "INSERT INTO user_item_interaction (user_id, workout_id) VALUES (" + user_id + ", " + workout_id + ")"
+    return user_id + " " + workout_id
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

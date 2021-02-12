@@ -15,7 +15,7 @@ def build_dataset(user_item_interactions_path, neg_sample=False):
     Returns user-item interaction as pandas dataframe, LightFM dataset object,
     and dictionary that maps the external ids to LightFM's internal user and item indices
     """
-    if type(build_dataset) == str:
+    if type(user_item_interactions_path) == str:
         user_item_interactions = pd.read_csv(user_item_interactions_path)
     else:
         user_item_interactions = user_item_interactions_path
