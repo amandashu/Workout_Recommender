@@ -94,15 +94,8 @@
             </div>
             <div class="card-footer">
               <!--{{ w['youtube_link'] }}-->
-              <a id="startWorkout" workout_id="{{w['workout_id']}}" onclick='openPlayerOverlay("{{ i }}")' class="btn btn-primary">Start Workout!</a>
-              <script>
-                document.getElementById("startWorkout").addEventListener("click", function () {
-                  sessionStorage.setItem('workout_id') = document.getElementById("startWorkout").getAttribute("workout_id");
-                  var original_url = document.getElementById('like').href;
-                  document.getElementById('like').setAttribute("href", original_url.substr(0, original_url.lastIndexOf("/")) + sessionStorage.getItem('workout_id'));
-                  console.log(sessionStorage.getItem('workout_id'));
-                });
-              </script>
+              <a >
+              <a id="startWorkout-index-{{ i }}" workout_id="{{w['workout_id']}}" onclick='openPlayerOverlay("{{ i }}")' class="btn btn-primary">Start Workout!</a>
               <!--Video Embed Driver Below ( these are hidden from view and referenced by overlay.js :) )-->
               <span id="video-index-{{ i }}" style="display: none;">{{'https://www.youtube-nocookie.com/embed/' +
                 w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') }}</span>
