@@ -1,0 +1,98 @@
+
+<h2 class="display-5">Workout Information</h2>
+
+<div id='equipment_div'>
+{{ form.equipment.label(class='display-6') }}<br>
+{{ form.equipment(size=12, style='list-style: none;') }}
+{% if form.equipment.errors %}
+    {% for e in form.equipment.errors %}
+      <span>{{ e}} </span>
+    {% endfor %}
+{% endif %}
+</div>
+
+<div>
+{{ form.no_equipment.label(class='display-8') }}
+{{ form.no_equipment(size=12, style='list-style: none;') }}
+{% if form.no_equipment.errors %}
+    {% for e in form.no_equipment.errors %}
+      <span>{{ e}} </span>
+    {% endfor %}
+{% endif %}
+</div>
+
+<div id='training_type_div'>
+{{ form.training_type.label(class='display-6') }}<br>
+{{ form.training_type(size=12, style='list-style: none;') }}
+{% if form.training_type.errors %}
+    {% for e in form.training_type.errors %}
+      <span>{{ e}} </span>
+    {% endfor %}
+{% endif %}
+</div>
+
+<div>
+{{ form.no_training_type.label(class='display-8') }}
+{{ form.no_training_type(size=12, style='list-style: none;') }}
+{% if form.no_training_type.errors %}
+    {% for e in form.no_equipment.errors %}
+      <span>{{ e}} </span>
+    {% endfor %}
+{% endif %}
+</div>
+
+<h3 class="display-6">My Preferred Workout Duration Range in Minutes</h3>
+<div>
+{{ form.min_duration.label(class='display-7') }}
+{{ form.min_duration(size=5, value=1, placeholder=1) }}
+{% if form.min_duration.errors %}
+    {% for e in form.min_duration.errors %}
+      <span>{{ e}} </span>
+    {% endfor %}
+{% endif %}
+
+{{ form.max_duration.label(class='display-7') }}
+{{ form.max_duration(size=5, value=120, placeholder=120) }}
+{% if form.max_duration.errors %}
+    {% for e in form.max_duration.errors %}
+      <span>{{ e}} </span>
+    {% endfor %}
+{% endif %}
+</div>
+<h3 class="display-6">My Preferred Calorie Burn Range</h3>
+<div>
+{{ form.min_calories.label(class='display-7') }}
+{{ form.min_calories(size=5, value=1, placeholder=1) }}
+{% if form.min_calories.errors %}
+    {% for e in form.min_calories.errors %}
+      <span>{{ e}} </span>
+    {% endfor %}
+{% endif %}
+
+{{ form.max_calories.label(class='display-7') }}
+{{ form.max_calories(size=5, value=1300, placeholder=1300) }}
+{% if form.max_calories.errors %}
+    {% for e in form.max_calories.errors %}
+      <span>{{ e}} </span>
+    {% endfor %}
+{% endif %}
+</div>
+
+<h3 class="display-6">My Preferred Diffculty Range (1-5)</h3>
+<div>
+{{ form.min_difficulty.label(class='display-7') }}
+{{ form.min_difficulty(size=5, value=1, placeholder=1) }}
+{% if form.min_difficulty.errors %}
+    {% for e in form.min_difficulty.errors %}
+      <span>{{ e}} </span>
+    {% endfor %}
+{% endif %}
+
+{{ form.max_difficulty.label(class='display-7') }}
+{{ form.max_difficulty(size=5, value=5, placeholder=5) }}
+{% if form.max_difficulty.errors %}
+    {% for e in form.max_difficulty.errors %}
+      <span>{{ e}} </span>
+    {% endfor %}
+{% endif %}
+</div>

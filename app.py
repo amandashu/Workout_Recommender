@@ -4,7 +4,7 @@ import os
 from flask import send_from_directory
 from src.app.register import register_user
 from flask import Flask, render_template, redirect, url_for, session, g, request
-from src.app.forms import RegistrationForm, LoginForm
+from src.app.forms import RegistrationForm, LoginForm, WorkoutInformation
 from flask_mysqldb import MySQL
 from flask_bcrypt import Bcrypt
 import json
@@ -107,12 +107,6 @@ def recommendation_page():
     if g.user is None:
         return redirect(url_for('login_page'))
 
-    # recommendation engine
-    # if request.method == "POST":
-    #     rec_engine = request.form.get("engine", "random")
-    # else:
-    #     rec_engine = request.form.get("engine", "random")
-
     rec_engine = request.form.get("engine")
     if rec_engine is None:
         return render_template("recommendation_page.html", rec_engine=None, rec_dct=None)
@@ -156,6 +150,41 @@ def recommendation_page():
         rec_dct[body_focus.replace('_',' ').capitalize().replace('b','B')] = results
     return render_template("recommendation_page.html", rec_engine=rec_engine, rec_dct=rec_dct)
 
+@app.route('/update', methods=['GET', 'POST'])
+def update():
+    form = WorkoutInformation()
+    # if form.validate_on_submit():
+    #     cur = db.connection.cursor()
+    #
+    #     # check if email already exists in database
+    #     cur.execute("SELECT email FROM users WHERE email = %s",
+    #                 (form.email.data,))
+    #     result = cur.fetchone()
+    #     if result is not None:  # display error
+    #         return render_template('registration_page.html', form=form, email_error=True)
+    #     else:  # insert user into database
+    #         # hash the password
+    #         hashed_password = bcrypt.generate_password_hash(
+    #             form.password.data).decode('utf-8')
+    #
+    #         # get next user id
+    #         cur.execute("SELECT MAX(user_id) FROM users")
+    #         result = cur.fetchone()[0]
+    #         if result is None:
+    #             user_id = 5000  # fbcommenters end with id 4026, our users will start from 5000
+    #         else:
+    #             user_id = result + 1
+    #
+    #         cur.execute(*register_user(form, user_id, hashed_password))
+    #         db.connection.commit()
+    #         return redirect(url_for('login_page'))
+    #     cur.close()
+    user_dct = g.user[['equipment','training_type','min_duration','max_duration','min_calories',
+                            'max_calories','min_difficulty','max_difficulty']].to_dict()
+    for k,v in user_dct.items():
+        if type(v)!=str:
+            user_dct[k] = int(v)
+    return render_template('update_workout_info.html', form=form, user=user_dct)
 
 @app.route('/logout')
 def logout():
