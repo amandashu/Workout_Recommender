@@ -2,7 +2,7 @@ from src.models.light_fm import light_fm, evaluate, pred_i
 from src.data.model_preprocessing import get_data
 import os
 from flask import send_from_directory
-from src.app.register import register_user
+from src.app.register import register_user, update_preferences
 from flask import Flask, render_template, redirect, url_for, session, g, request
 from src.app.forms import RegistrationForm, LoginForm, WorkoutInformation
 from flask_mysqldb import MySQL
@@ -153,32 +153,14 @@ def recommendation_page():
 @app.route('/update', methods=['GET', 'POST'])
 def update():
     form = WorkoutInformation()
-    # if form.validate_on_submit():
-    #     cur = db.connection.cursor()
-    #
-    #     # check if email already exists in database
-    #     cur.execute("SELECT email FROM users WHERE email = %s",
-    #                 (form.email.data,))
-    #     result = cur.fetchone()
-    #     if result is not None:  # display error
-    #         return render_template('registration_page.html', form=form, email_error=True)
-    #     else:  # insert user into database
-    #         # hash the password
-    #         hashed_password = bcrypt.generate_password_hash(
-    #             form.password.data).decode('utf-8')
-    #
-    #         # get next user id
-    #         cur.execute("SELECT MAX(user_id) FROM users")
-    #         result = cur.fetchone()[0]
-    #         if result is None:
-    #             user_id = 5000  # fbcommenters end with id 4026, our users will start from 5000
-    #         else:
-    #             user_id = result + 1
-    #
-    #         cur.execute(*register_user(form, user_id, hashed_password))
-    #         db.connection.commit()
-    #         return redirect(url_for('login_page'))
-    #     cur.close()
+    if form.validate_on_submit(): # update user table based on form inputs
+        cur = db.connection.cursor()
+        cur.execute(*update_preferences(form, g.user.user_id))
+        db.connection.commit()
+        cur.close()
+        return redirect(url_for('recommendation_page'))
+
+    # create dictionary from user series in order to prepopulate form with previous preferences
     user_dct = g.user[['equipment','training_type','min_duration','max_duration','min_calories',
                             'max_calories','min_difficulty','max_difficulty']].to_dict()
     for k,v in user_dct.items():
