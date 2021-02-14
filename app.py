@@ -148,11 +148,19 @@ def recommendation_page():
         uii = pd.read_sql_query(
             "SELECT * FROM user_item_interaction", db.connection)
         data = get_data(uii)
-        
-        # sort predictions, get last (most relevant) K items, resort
-        # TODO change 69 to session['user_id'
-        pred = pred_i(data, 69)[-10:][::-1] #session['user_id']
-        query = "SELECT * FROM fbworkouts_meta WHERE workout_id IN (" + str(list(pred))[1:-1] + ")"
+
+
+        all_user_interactions = pd.read_sql_query(
+            "SELECT * FROM workout.user_item_interaction WHERE user_id = " + session['user_id']
+        )
+
+        if len(all_user_interactions) != 0:
+            # sort predictions, get last (most relevant) K items, resort
+            pred = pred_i(data, session['user_id'])[-10:][::-1]
+            query = "SELECT * FROM fbworkouts_meta WHERE workout_id IN (" + str(list(pred))[1:-1] + ")"
+        else:
+            # Cold Start, recommend randomly
+            query = "SELECT * FROM fbworkouts_meta ORDER BY RAND() LIMIT 10"
 
     results = pd.read_sql_query(query, db.connection)
     return render_template("recommendation_page.html", engine=rec_engine, workouts=results)
@@ -182,6 +190,15 @@ def favicon():
 @app.route('/record_like/<user_id>/<workout_id>')
 def record_like(user_id, workout_id):
     # "INSERT INTO user_item_interaction (user_id, workout_id) VALUES (" + user_id + ", " + workout_id + ")"
+    all_user_interactions = pd.read_sql_query(
+            "SELECT * FROM workout.user_item_interaction WHERE user_id = " + user_id + " and workout_id = " + workout_id
+    )
+
+    if len(all_user_interactions) != 0:
+        # no such interaction
+        print('recorded like')
+    else:
+        print('already liked!')
     return user_id + " " + workout_id
 
 if __name__ == '__main__':

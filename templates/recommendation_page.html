@@ -63,7 +63,7 @@
               </div>
               <div class="card-footer">
                 <a id="like" class="btn btn-primary"
-                  href="{{ url_for('record_like', user_id=session['user_id'], workout_id='') }}">Like</a>
+                  user_id="{{ session['user_id'] }}">Like</a>
                 <a class="btn btn-primary">Dislike</a>
                 <a class="btn btn-primary" onclick="overlayNextVideo()">Skip</a>
                 <a class="btn btn-primary" id="overlay-fb-link" href="#" target="_blank">FitnessBlender Page</a>
