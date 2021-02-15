@@ -34,13 +34,13 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('login_page') }}">Login/Register</a>
-          </li>
-          <li class="nav-item">
             <a class="nav-link" href="{{ url_for('about_page') }}">About</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('contact_page') }}">Contact Us</a>
+          </li>
+          <li id='update_preferences' class="nav-item">
+            <a class="nav-link" href="{{ url_for('update') }}">Update Preferences</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
@@ -65,6 +65,13 @@
   <!-- Bootstrap core JavaScript -->
   <script src="{{ url_for('static',filename='vendor/jquery/jquery.min.js') }}"></script>
   <script src="{{ url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+  <!-- no update preferences button until user is logged in -->
+  {% if g.user is none %}
+  <script>
+    document.getElementById('update_preferences').style.display = "none";
+  </script>
+  {% endif %}
   {% block scripts %}{% endblock %}
 
 </body>
