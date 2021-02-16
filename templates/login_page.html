@@ -21,7 +21,7 @@
             {% elif email_error %}
                <span>Account with this email does not exist</span>
             {% endif %}
-    
+
           </div>
           <div>
             {{ form.password.label(class='display-6') }}<br>
@@ -33,7 +33,7 @@
             {% elif password_error %}
                <span>Incorrect password</span>
             {% endif %}
-    
+
           </div>
         </fieldset>
         <br>
@@ -46,7 +46,7 @@
       <br>
       <p class="display-6">Create An Account <a href="{{ url_for('registration_page') }}"> Here</a></p>
     </header>
-    
+
   </div>
-  
+
 {% endblock content %}

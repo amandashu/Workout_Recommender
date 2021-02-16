@@ -66,13 +66,13 @@ def main(targets):
 
     if 'all' in targets:
         gather_data(data_params)
-        preprocess(data_params, d=15)
+        preprocess(data_params, d=5)
         run_model(data_params, k=20)
         return
 
     if 'data' in targets:
         gather_data(data_params)
-        preprocess(data_params, d=15)
+        preprocess(data_params, d=5)
 
     if 'model' in targets:
         run_model(data_params, k=20)

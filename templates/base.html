@@ -46,7 +46,7 @@
           <li id='update_preferences' class="nav-item">
             <a class="nav-link" href="{{ url_for('update') }}">Update Preferences</a>
           </li>
-          <li class="nav-item">
+          <li id='logout' class="nav-item">
             <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
           </li>
         </ul>
@@ -70,10 +70,11 @@
   <script src="{{ url_for('static',filename='vendor/jquery/jquery.min.js') }}"></script>
   <script src="{{ url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
-  <!-- no update preferences button until user is logged in -->
+  <!-- no update preferences or logout button until user is logged in -->
   {% if g.user is none %}
   <script>
     document.getElementById('update_preferences').style.display = "none";
+    document.getElementById('logout').style.display = "none";
   </script>
   {% endif %}
   {% block scripts %}{% endblock %}

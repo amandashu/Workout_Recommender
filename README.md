@@ -22,17 +22,19 @@ The data is scraped from https://www.fitnessblender.com/. We are using the data 
 - The `src/data` folder contains `scrape.py`, the web-scraping script that writes three data files into `data/raw` folder. `fbpreprocessing.py` takes these raw data files and outputs cleaned/transformed data files into `data/preprocessed` folder. `youtube.py` grabs youtube related data from the Youtube API. `model_preprocessing` reads in preprocessed data and transforms the data into what is needed for model inputs.
 - `src/models` contains `run_models.py` which trains and evaluates the models. Models are implemented in `lightm_fm.py` and `top_popular.py`
 - The `src/utils` folder has `clean.py` which implements the standard target `clean`.
-- The `src/app` folder holds files for the web application. `forms.py` contains wtforms classes for registration/login pages. `recommendations.py` holds code for filtering user preferences and building recommendation lists. `register.py` contains a helper function to create the sql insertion statement for registering users.
+- The `src/app` folder holds files for the web application. `forms.py` contains wtforms classes for registration/login pages. `recommendations.py` holds code for filtering user preferences and building recommendation lists. `register.py` contains helper functions to create the sql insertion/update statements for registering users and updating their workout preferences.
 
 **Config**: `data-params.json` has file paths outputs for data collection/preprocessing and `test-params.json` has the data paths for the test target. To webscrape, this folder should also include `chromedriver.json`. To gather Youtube data, `api_key.json` specifies the api key. To run the app, `db_config.json` has the database configurations.
 
 **Notebook**: `eda.ipynb` is a notebook with exploratory data analysis on scraped data. `models.ipynb` is a notebook reporting the recommendation models' performance across various parameters.
 
-**Static**: Several css and javascript files for styling/theming of website.
+**Static**: `images` folder holds a gif ([source](https://www.pinterest.at/pin/512495632597411529/)) used for the loading page. `js` contains `overlay.js`, for display of videos on the recommendation page, and `workout_info.js` for registration and update preferences pages. `styles` holds a css file and `vendor` holds several javascript files (Bootstrap, JQuery) for styling/theming of the website.
 
 **Templates**: Holds html files for the various endpoints.
 
 **Testdata/raw**: These are fake datasets meant to be used with the test target.
+
+**Docker**: Docker related files. See [here](https://github.com/amandashu/Workout_Recommender/blob/main/docker/README_DOCKER.md)
 
 ### Set Up Project Environment
 There are two ways to run this project: a) Docker (preferred) or b) Locally <br>
