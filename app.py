@@ -128,6 +128,10 @@ def recommendation_page():
     else:
         rec_engine = request.form.get("engine", "random")
 
+    all_user_interactions = pd.read_sql_query(
+        "SELECT * FROM workout.user_item_interaction WHERE user_id = " + str(
+            session['user_id']), db.connection
+    )
     if rec_engine == "random":
         query = "SELECT * FROM fbworkouts_meta ORDER BY RAND() LIMIT 10"
     elif rec_engine == "toppop":
@@ -149,20 +153,19 @@ def recommendation_page():
             "SELECT * FROM user_item_interaction", db.connection)
         data = get_data(uii)
 
-
-        all_user_interactions = pd.read_sql_query(
-            "SELECT * FROM workout.user_item_interaction WHERE user_id = " + session['user_id']
-        )
-
         if len(all_user_interactions) != 0:
             # sort predictions, get last (most relevant) K items, resort
             pred = pred_i(data, session['user_id'])[-10:][::-1]
-            query = "SELECT * FROM fbworkouts_meta WHERE workout_id IN (" + str(list(pred))[1:-1] + ")"
+            query = "SELECT * FROM fbworkouts_meta WHERE workout_id IN (" + str(list(pred))[
+                1:-1] + ")"
         else:
             # Cold Start, recommend randomly
             query = "SELECT * FROM fbworkouts_meta ORDER BY RAND() LIMIT 10"
 
     results = pd.read_sql_query(query, db.connection)
+    results['liked'] = results['workout_id'].apply(
+        lambda x: x in list(all_user_interactions['workout_id']))
+
     return render_template("recommendation_page.html", engine=rec_engine, workouts=results)
 
 
@@ -187,19 +190,33 @@ def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
+
 @app.route('/record_like/<user_id>/<workout_id>')
 def record_like(user_id, workout_id):
     # "INSERT INTO user_item_interaction (user_id, workout_id) VALUES (" + user_id + ", " + workout_id + ")"
     all_user_interactions = pd.read_sql_query(
-            "SELECT * FROM workout.user_item_interaction WHERE user_id = " + user_id + " and workout_id = " + workout_id
+        "SELECT * FROM workout.user_item_interaction WHERE user_id = " +
+        user_id + " and workout_id = " + workout_id, db.connection
     )
 
-    if len(all_user_interactions) != 0:
+    if len(all_user_interactions) == 0:
         # no such interaction
+
+        cur = db.connection.cursor()
+        cur.execute(
+            "INSERT INTO workout.user_item_interaction (user_id, workout_id) VALUES (%s, %s);", (int(user_id), int(workout_id)))
+
         print('recorded like')
     else:
+        cur = db.connection.cursor()
+        cur.execute(
+            "DELETE FROM workout.user_item_interaction WHERE user_id = %s and workout_id = %s;", (int(user_id), int(workout_id)))
+
         print('already liked!')
+
+    cur.connection.commit()
     return user_id + " " + workout_id
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

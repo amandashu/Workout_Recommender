@@ -29,9 +29,7 @@ function openPlayerOverlay(videoIndex) {
     document.getElementById("overlay-fb-link").href = fbURL;
     document.getElementById("overlay-workout-title").textContent = videoTitle
     document.getElementById("overlay-workout-text").innerText = videoDesc
-    document.getElementById('like').setAttribute("onclick", "record(" + document.getElementById('user_id') + "," + workout_id + ")");
-
-
+    document.getElementById('like').setAttribute("onclick", "record(" + document.getElementById('like').getAttribute('user_id') + "," + workout_id + ")");
 
     document.getElementById("overlay-display").style.display = "block";
     console.log(workout_id);
