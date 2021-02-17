@@ -118,6 +118,7 @@ def recommendation_page():
     if rec_engine is None:
         return render_template("recommendation_page.html", rec_engine=None, rec_dct=None)
 
+    # user's previous interactions
     all_user_interactions = pd.read_sql_query(
         "SELECT * FROM workout.user_item_interaction WHERE user_id = " + str(
             session['user_id']), db.connection
@@ -142,12 +143,11 @@ def recommendation_page():
         data = get_data(uii)
 
         if len(all_user_interactions) != 0:
-            pred, scores = pred_i(data, session['user_id']) # TODO: replace 69 with g.user.user_id
-        else:
+            pred, scores = pred_i(data, session['user_id'])
+        else: # give random recommendations if user has no previous interactions
             query = "SELECT workout_id, RAND() as score FROM fbworkouts_meta ORDER BY score"
             results = pd.read_sql_query(query, db.connection)
             pred, scores = list(results.iloc[:,0]), list(results.iloc[:,1])
-
 
     # dct for predictions to scores
     pred_scores = {pred[i]:scores[i] for i in range(len(pred))}
@@ -155,7 +155,7 @@ def recommendation_page():
     # get fbworkouts dataframe
     query = "SELECT * FROM fbworkouts"
     results = pd.read_sql_query(query, db.connection)
-    
+
     # dictionary with keys as body focus and values as filtered list of workouts
     pred_dct = create_rec_lists(results, g.user)
 

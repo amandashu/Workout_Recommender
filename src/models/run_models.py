@@ -23,8 +23,6 @@ def run_models(data_dct, k=None):
     # Top Pop ######################################################
     print("\nRunning Top Popular...")
 
-    pred_toppop, _ = top_popular(data_dct['user_item_interactions'])
-
     top_pop_ndcg = evaluate_top_popular(data_dct['train_df'],
                                         data_dct['test_ui_matrix'],
                                         data_dct['item_map'], k)
