@@ -52,7 +52,8 @@
                 <p id="overlay-workout-text" class="card-text">Loading...</p>
               </div>
               <div class="card-footer">
-                <a class="btn btn-primary" href="">Like</a>
+                <a id="like" class="btn btn-primary"
+                  user_id="{{ session['user_id'] }}">Like</a>
                 <a class="btn btn-primary">Dislike</a>
                 <a class="btn btn-primary" onclick="overlayNextVideo()">Skip</a>
                 <a class="btn btn-primary" id="overlay-fb-link" href="#" target="_blank">FitnessBlender Page</a>
@@ -80,7 +81,7 @@
         <h1 class="display-3" style="color:white;">{{ body_focus}}</h1>
         <div class="container-fluid">
           <!-- Hidden by default, will become visible once Slick can reload the page-->
-          <div class="row text-center carousel loaded" style="visibility: hidden;" > 
+          <div class="row text-center carousel loaded" style="visibility: hidden;" >
             {% for i, w in workouts.iloc[:9].iterrows() %}
             <div class="col-md-12 mb-4 workout-card">
               <div class="card h-100">
@@ -94,7 +95,8 @@
                 </div>
                 <div class="card-footer">
                   <!--{{ w['youtube_link'] }}-->
-                  <a onclick='openPlayerOverlay("{{ i }}")' class="btn btn-primary">Start Workout!</a>
+                  <p style="visibility: {{ 'hidden' if not w['liked'] }}">&#10084;&#65039; Liked<p>
+                  <a id="startWorkout-index-{{ i }}" workout_id="{{w['workout_id']}}" onclick='openPlayerOverlay("{{ i }}")' class="btn btn-primary">Start Workout!</a>
                   <!--Video Embed Driver Below ( these are hidden from view and referenced by overlay.js :) )-->
                   <span id="video-index-{{ i }}" style="display: none;">{{'https://www.youtube-nocookie.com/embed/' +
                     w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') }}</span>
