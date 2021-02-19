@@ -95,8 +95,8 @@
                 </div>
                 <div class="card-footer">
                   <!--{{ w['youtube_link'] }}-->
-                  <p style="visibility: {{ 'hidden' if not w['liked'] }}">&#10084;&#65039; Liked<p>
-                  <a id="startWorkout-index-{{ i }}" workout_id="{{w['workout_id']}}" onclick='openPlayerOverlay("{{ i }}")' class="btn btn-primary">Start Workout!</a>
+                  <p id="liked-status-{{ i }}" style="visibility: {{ 'hidden' if not w['liked'] }}">&#10084;&#65039; Liked<p>
+                  <a id="startWorkout-index-{{ i }}" workout_id="{{w['workout_id']}}" onclick='openPlayerOverlay("{{ i }}", "{{ w['liked'] }}")' class="btn btn-primary">Start Workout!</a>
                   <!--Video Embed Driver Below ( these are hidden from view and referenced by overlay.js :) )-->
                   <span id="video-index-{{ i }}" style="display: none;">{{'https://www.youtube-nocookie.com/embed/' +
                     w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') }}</span>

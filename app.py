@@ -127,7 +127,7 @@ def recommendation_page():
     if rec_engine == "random":
         query = "SELECT workout_id, RAND() as score FROM fbworkouts_meta ORDER BY score"
         results = pd.read_sql_query(query, db.connection)
-        pred, scores = list(results.iloc[:,0]), list(results.iloc[:,1])
+        pred, scores = list(results.iloc[:, 0]), list(results.iloc[:, 1])
     elif rec_engine == "toppop":
         query = """
                 SELECT workout_id, COUNT(workout_id) AS score
@@ -136,7 +136,7 @@ def recommendation_page():
                 ORDER BY 2 DESC
                 """
         results = pd.read_sql_query(query, db.connection)
-        pred, scores = list(results.iloc[:,0]), list(results.iloc[:,1])
+        pred, scores = list(results.iloc[:, 0]), list(results.iloc[:, 1])
     else:
         uii = pd.read_sql_query(
             "SELECT * FROM user_item_interaction", db.connection)
@@ -144,13 +144,13 @@ def recommendation_page():
 
         if len(all_user_interactions) != 0:
             pred, scores = pred_i(data, session['user_id'])
-        else: # give random recommendations if user has no previous interactions
+        else:  # give random recommendations if user has no previous interactions
             query = "SELECT workout_id, RAND() as score FROM fbworkouts_meta ORDER BY score"
             results = pd.read_sql_query(query, db.connection)
-            pred, scores = list(results.iloc[:,0]), list(results.iloc[:,1])
+            pred, scores = list(results.iloc[:, 0]), list(results.iloc[:, 1])
 
     # dct for predictions to scores
-    pred_scores = {pred[i]:scores[i] for i in range(len(pred))}
+    pred_scores = {pred[i]: scores[i] for i in range(len(pred))}
 
     # get fbworkouts dataframe
     query = "SELECT * FROM fbworkouts"
@@ -163,17 +163,21 @@ def recommendation_page():
     # fb_workouts_meta schema and rows sorted by scores
     rec_dct = {}
     for body_focus in pred_dct.keys():
-        query = "SELECT * FROM fbworkouts_meta WHERE workout_id IN (" + str(pred_dct[body_focus])[1:-1] + ")"
-        results = get_rec_sorted(pd.read_sql_query(query, db.connection), pred_scores)
+        query = "SELECT * FROM fbworkouts_meta WHERE workout_id IN (" + str(
+            pred_dct[body_focus])[1:-1] + ")"
+        results = get_rec_sorted(pd.read_sql_query(
+            query, db.connection), pred_scores)
         results['liked'] = results['workout_id'].apply(
-                lambda x: x in list(all_user_interactions['workout_id']))
-        rec_dct[body_focus.replace('_',' ').capitalize().replace('b','B')] = results
+            lambda x: x in list(all_user_interactions['workout_id']))
+        rec_dct[body_focus.replace(
+            '_', ' ').capitalize().replace('b', 'B')] = results
     return render_template("recommendation_page.html", rec_engine=rec_engine, rec_dct=rec_dct)
+
 
 @app.route('/update', methods=['GET', 'POST'])
 def update():
     form = WorkoutInformation()
-    if form.validate_on_submit(): # update user table based on form inputs
+    if form.validate_on_submit():  # update user table based on form inputs
         cur = db.connection.cursor()
         cur.execute(*update_preferences(form, g.user.user_id))
         db.connection.commit()
@@ -181,12 +185,13 @@ def update():
         return redirect(url_for('recommendation_page'))
 
     # create dictionary from user series in order to prepopulate form with previous preferences
-    user_dct = g.user[['equipment','training_type','min_duration','max_duration','min_calories',
-                            'max_calories','min_difficulty','max_difficulty']].to_dict()
-    for k,v in user_dct.items():
-        if type(v)!=str:
+    user_dct = g.user[['equipment', 'training_type', 'min_duration', 'max_duration', 'min_calories',
+                       'max_calories', 'min_difficulty', 'max_difficulty']].to_dict()
+    for k, v in user_dct.items():
+        if type(v) != str:
             user_dct[k] = int(v)
     return render_template('update_workout_info.html', form=form, user=user_dct)
+
 
 @app.route('/logout')
 def logout():
@@ -212,7 +217,6 @@ def favicon():
 
 @app.route('/record_like/<user_id>/<workout_id>')
 def record_like(user_id, workout_id):
-    # "INSERT INTO user_item_interaction (user_id, workout_id) VALUES (" + user_id + ", " + workout_id + ")"
     all_user_interactions = pd.read_sql_query(
         "SELECT * FROM workout.user_item_interaction WHERE user_id = " +
         user_id + " and workout_id = " + workout_id, db.connection
@@ -232,6 +236,28 @@ def record_like(user_id, workout_id):
             "DELETE FROM workout.user_item_interaction WHERE user_id = %s and workout_id = %s;", (int(user_id), int(workout_id)))
 
         print('already liked!')
+
+    cur.connection.commit()
+    return user_id + " " + workout_id
+
+
+@app.route('/remove_like/<user_id>/<workout_id>')
+def remove_like(user_id, workout_id):
+    all_user_interactions = pd.read_sql_query(
+        "SELECT * FROM workout.user_item_interaction WHERE user_id = " +
+        user_id + " and workout_id = " + workout_id, db.connection
+    )
+
+    if len(all_user_interactions) == 0:
+        # no such interaction
+
+        print('never liked')
+    else:
+        cur = db.connection.cursor()
+        cur.execute(
+            "DELETE FROM workout.user_item_interaction WHERE user_id = %s and workout_id = %s;", (int(user_id), int(workout_id)))
+
+        print('removed like!')
 
     cur.connection.commit()
     return user_id + " " + workout_id
