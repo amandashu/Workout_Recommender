@@ -124,6 +124,12 @@ def recommendation_page():
             session['user_id']), db.connection
     )
 
+    # user's disliked items
+    user_disliked_items = pd.read_sql_query(
+        "SELECT * FROM workout.user_disliked_items WHERE user_id = " + str(
+            session['user_id']), db.connection
+    )
+
     if rec_engine == "random":
         query = "SELECT workout_id, RAND() as score FROM fbworkouts_meta ORDER BY score"
         results = pd.read_sql_query(query, db.connection)
@@ -169,8 +175,11 @@ def recommendation_page():
             query, db.connection), pred_scores)
         results['liked'] = results['workout_id'].apply(
             lambda x: x in list(all_user_interactions['workout_id']))
+        results['disliked'] = results['workout_id'].apply(
+            lambda x: x in list(user_disliked_items['workout_id']))
+        
         rec_dct[body_focus.replace(
-            '_', ' ').capitalize().replace('b', 'B')] = results
+            '_', ' ').capitalize().replace('b', 'B')] = results[~results['disliked']]
     return render_template("recommendation_page.html", rec_engine=rec_engine, rec_dct=rec_dct)
 
 
@@ -217,47 +226,119 @@ def favicon():
 
 @app.route('/record_like/<user_id>/<workout_id>')
 def record_like(user_id, workout_id):
+    """
+    Handler for like button event (record like)
+    """
+
     all_user_interactions = pd.read_sql_query(
         "SELECT * FROM workout.user_item_interaction WHERE user_id = " +
         user_id + " and workout_id = " + workout_id, db.connection
     )
 
+    cur = db.connection.cursor()
     if len(all_user_interactions) == 0:
         # no such interaction
 
-        cur = db.connection.cursor()
         cur.execute(
             "INSERT INTO workout.user_item_interaction (user_id, workout_id) VALUES (%s, %s);", (int(user_id), int(workout_id)))
 
         print('recorded like')
     else:
-        cur = db.connection.cursor()
-        cur.execute(
-            "DELETE FROM workout.user_item_interaction WHERE user_id = %s and workout_id = %s;", (int(user_id), int(workout_id)))
+        pass
+        # cur = db.connection.cursor()
+        # cur.execute(
+        #     "DELETE FROM workout.user_item_interaction WHERE user_id = %s and workout_id = %s;", (int(user_id), int(workout_id)))
 
-        print('already liked!')
+        # print('removed like!')
 
     cur.connection.commit()
     return user_id + " " + workout_id
 
-
 @app.route('/remove_like/<user_id>/<workout_id>')
 def remove_like(user_id, workout_id):
+    """
+    Handler for like button event (remove like)
+    """
+
     all_user_interactions = pd.read_sql_query(
         "SELECT * FROM workout.user_item_interaction WHERE user_id = " +
         user_id + " and workout_id = " + workout_id, db.connection
     )
 
+    cur = db.connection.cursor()
     if len(all_user_interactions) == 0:
-        # no such interaction
+        pass
+        
+        # cur = db.connection.cursor()
+        # cur.execute(
+        #     "INSERT INTO workout.user_item_interaction (user_id, workout_id) VALUES (%s, %s);", (int(user_id), int(workout_id)))
 
-        print('never liked')
+        # print('recorded like')
     else:
-        cur = db.connection.cursor()
         cur.execute(
             "DELETE FROM workout.user_item_interaction WHERE user_id = %s and workout_id = %s;", (int(user_id), int(workout_id)))
 
         print('removed like!')
+
+    cur.connection.commit()
+    return user_id + " " + workout_id
+
+@app.route('/record_dislike/<user_id>/<workout_id>')
+def record_dislike(user_id, workout_id):
+    """
+    Handler for dislike button event (record like)
+    """
+
+    user_disliked_items = pd.read_sql_query(
+        "SELECT * FROM workout.user_disliked_items WHERE user_id = " +
+        user_id + " and workout_id = " + workout_id, db.connection
+    )
+
+    cur = db.connection.cursor()
+        
+    if len(user_disliked_items) == 0:
+        # never disliked
+
+        cur.execute(
+            "INSERT INTO workout.user_disliked_items (user_id, workout_id) VALUES (%s, %s);", (int(user_id), int(workout_id)))
+
+        print('recorded dislike')
+    else:
+        pass
+        # cur = db.connection.cursor()
+        # cur.execute(
+        #     "DELETE FROM workout.user_disliked_items WHERE user_id = %s and workout_id = %s;", (int(user_id), int(workout_id)))
+
+        # print('removed dislike!')
+
+    cur.connection.commit()
+    return user_id + " " + workout_id
+
+@app.route('/remove_dislike/<user_id>/<workout_id>')
+def remove_dislike(user_id, workout_id):
+    """
+    Handler for dislike button event (remove disliking)
+    """
+
+    user_disliked_items = pd.read_sql_query(
+        "SELECT * FROM workout.user_disliked_items WHERE user_id = " +
+        user_id + " and workout_id = " + workout_id, db.connection
+    )
+
+    cur = db.connection.cursor()
+    if len(user_disliked_items) == 0:
+        pass
+
+        # cur = db.connection.cursor()
+        # cur.execute(
+        #     "INSERT INTO workout.user_disliked_items (user_id, workout_id) VALUES (%s, %s);", (int(user_id), int(workout_id)))
+
+        # print('recorded dislike')
+    else:
+        cur.execute(
+            "DELETE FROM workout.user_disliked_items WHERE user_id = %s and workout_id = %s;", (int(user_id), int(workout_id)))
+
+        print('removed dislike!')
 
     cur.connection.commit()
     return user_id + " " + workout_id
