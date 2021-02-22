@@ -89,11 +89,11 @@ function openPlayerOverlay(video_index, liked, disliked) {
     document.getElementById("overlay-workout-title").textContent = videoTitle
     document.getElementById("overlay-workout-text").innerText = videoDesc
 
-    if (liked == "True" || document.getElementById('liked-status-' + video_index).style.visibility != "hidden") {
+    if (document.getElementById('liked-status-' + video_index).style.visibility != "hidden") {
         document.getElementById('like').setAttribute("class", "btn btn-success")
         document.getElementById('like').text = "Liked"
 
-        if (disliked == "True" || document.getElementById('disliked-status-' + video_index).style.visibility != "hidden") {
+        if (document.getElementById('disliked-status-' + video_index).style.visibility != "hidden") {
             // cannot both like and dislike
 
             document.getElementById('dislike').text = "Disliked"
@@ -108,7 +108,7 @@ function openPlayerOverlay(video_index, liked, disliked) {
     else {
         document.getElementById('like').text = "Like"
 
-        if (disliked == "True" || document.getElementById('disliked-status-' + video_index).style.visibility != "hidden") {
+        if (document.getElementById('disliked-status-' + video_index).style.visibility != "hidden") {
             document.getElementById('dislike').setAttribute("class", "btn btn-danger")
             document.getElementById('dislike').text = "Disliked"
 
