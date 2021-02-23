@@ -76,7 +76,7 @@ function dislikeButtonOnPressed(video_index, user_id, workout_id) {
     });
 }
 
-function openPlayerOverlay(video_index, liked, disliked) {
+function openPlayerOverlay(video_index) {
     currentvideo_index = parseInt(video_index)
     ytURL = document.getElementById("video-index-" + video_index).textContent
     videoTitle = document.getElementById("workout-title-index-" + video_index).textContent

@@ -1,6 +1,6 @@
-## Workout Recommender
+## Asnapp
 
-A workout video recommender web application.
+Asnapp is a workout video recommender web application.
 
 Authors: Amanda Shu, Peter Peng, Najeem Kanishka
 
@@ -26,7 +26,7 @@ The data is scraped from https://www.fitnessblender.com/. We are using the data 
 
 **Config**: `data-params.json` has file paths outputs for data collection/preprocessing and `test-params.json` has the data paths for the test target. To webscrape, this folder should also include `chromedriver.json`. To gather Youtube data, `api_key.json` specifies the api key. To run the app, `db_config.json` has the database configurations.
 
-**Notebook**: `eda.ipynb` is a notebook with exploratory data analysis on scraped data. `models.ipynb` is a notebook reporting the recommendation models' performance across various parameters.
+**Notebook**: `eda.ipynb` is a notebook with exploratory data analysis on scraped data. `models.ipynb` is a notebook reporting the recommendation models' performance across various parameters. `top_popular_extension.ipynb` is a notebook looking into adding Youtube API data into the top popular recommender.
 
 **Static**: `images` folder holds a gif ([source](https://www.pinterest.at/pin/512495632597411529/)) used for the loading page. `js` contains `overlay.js`, for display of videos on the recommendation page, and `workout_info.js` for registration and update preferences pages. `styles` holds a css file and `vendor` holds several javascript files (Bootstrap, JQuery) for styling/theming of the website.
 

@@ -45,6 +45,12 @@ CREATE TABLE IF NOT EXISTS users
      stationary_bike INT
 );
 
+-- create users dislike table
+CREATE TABLE IF NOT EXISTS user_disliked_items
+(
+    user_id INT,
+    workout_id INT
+);
 
 -- manually upload fb_workouts.csv into table fbworkouts_meta with the following datatypes
 --      workout_id INT PRIMARY KEY,
