@@ -8,6 +8,7 @@ chromedriver
 notebook/test.ipynb
 config/db_config.json
 config/api_key.json
+config/flask_keys.json
 test
 testdata/preprocessed/*
 

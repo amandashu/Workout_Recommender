@@ -25,14 +25,17 @@ if is_prod:
     app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER')
     app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD')
     app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB')
+    app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY')
 else:
     db_config = json.load(open('./config/db_config.json'))
+    flask_keys = json.load(open('./config/flask_keys.json'))
     app.config['MYSQL_HOST'] = db_config['mysql_host']
     app.config['MYSQL_USER'] = db_config['mysql_user']
     app.config['MYSQL_PASSWORD'] = db_config['mysql_password']
     app.config['MYSQL_DB'] = db_config['mysql_db']
+    app.config['SECRET_KEY'] = flask_keys['secret_key']
 
-app.config['SECRET_KEY'] = 'dev'
+
 
 db = MySQL(app)
 bcrypt = Bcrypt(app)

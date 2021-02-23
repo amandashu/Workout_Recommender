@@ -59,3 +59,4 @@ b) To run locally, install requiremnents.txt into a virtualenv. Make sure you ha
 - Standard target `test` is implemented, and runs the data preprocessing and modeling results on the test data. The purpose of this target is purely to check the implementation of the code.
 - Use `python app.py` to run the app locally.
   - Note: this assumes that there is a file `config/db_config.json`, which has database host, user, password, and name information.
+  - And a file `config/flask_keys.json` which has a Flask secret key
