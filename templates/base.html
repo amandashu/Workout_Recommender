@@ -26,7 +26,10 @@
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <div class="container">
-      <a class="navbar-brand display-6" href="{{ url_for('recommendation_page') }}">Asnapp</a>
+      <a class="navbar-brand display-6" href="{{ url_for('recommendation_page') }}">
+        <img src= "{{ url_for('static',filename='favicon.ico') }}" width="30" height="30" alt='Logo for Asnapp'>
+         Asnapp
+      </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -61,7 +64,7 @@
   <!-- Footer -->
   <footer class="py-5 bg-dark">
     <div class="container">
-      <p class="m-0 text-center text-white">Website Copyright &copy; Amanda Shu, Najeem Kanishka, Peter Peng 2021</p>
+      <p class="m-0 text-center text-white">Copyright &copy; Amanda Shu, Najeem Kanishka, Peter Peng 2021</p>
       <p class="m-0 text-center text-white">All workout routines and associated materials are Copyright &copy; FitnessBlender 2021</p>
     </div>
   </footer>

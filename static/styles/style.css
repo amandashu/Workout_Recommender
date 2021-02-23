@@ -48,19 +48,26 @@ body {
   color: white;
 }
 
+@media screen and (max-width: 600px) {
+  .video-container {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+.alert-small {
+  left: 0;
+  margin: auto; 
+  right: 0;
+  text-align: center; 
+  top: 1em;
+  width: 80%;
+}
+
 .btn-primary {
   color: #fff;
   background-color: #1F2833;
   border-color: #45A29E;
-}
-
-@media (min-width: 992px) {
-  .container-scroll {
-      overflow-x: auto;
-  }
-  .container-scroll > .row {
-      width: 133.33333333%; /* = 100% * 4/3 */
-  }
 }
 
 /***
@@ -91,19 +98,14 @@ From: https://www.w3schools.com/howto/howto_js_fullscreen_overlay.asp
   text-align: center; /* Centered text/links */
 }
 
-
+/*  */
+@media screen and (max-width: 990px) {
+  .overlay-content {
+    top: 20% !important; /* 20% from the top */
+  }
+}
 
 .card-overlay {
   background-color: #45A29E;
   color: whitesmoke;
-}
-
-/* When the height of the screen is less than 450 pixels, change the font-size of the links and position the close button again, so they don't overlap */
-@media screen and (max-height: 450px) {
-  .overlay a {font-size: 20px}
-  .overlay .closebtn {
-    font-size: 40px;
-    top: 15px;
-    right: 35px;
-  }
 }
