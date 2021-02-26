@@ -32,7 +32,7 @@ The data is scraped from https://www.fitnessblender.com/. We are using the data 
 
 **Config**: `data-params.json` has file paths outputs for data collection/preprocessing and `test-params.json` has the data paths for the test target. To webscrape, this folder should also include `chromedriver.json`. To gather Youtube data, `api_key.json` specifies the api key. To run the app, `db_config.json` has the database configurations.
 
-**Notebook**: `eda.ipynb` is a notebook with exploratory data analysis on scraped data. `models.ipynb` is a notebook reporting the recommendation models' performance across various parameters. `top_popular_extension.ipynb` is a notebook looking into adding Youtube API data into the top popular recommender. `KNN_collab.ipynb` contains results of a KNN collaborative filtering model from surprise package and a pure collaborative filtering from LightFM.
+**Notebook**: `eda.ipynb` is a notebook with exploratory data analysis on scraped data. `param_comparision.ipynb` is a notebook reporting the recommendation models' performance across a couple parameters. `top_popular_extension.ipynb` is a notebook looking into adding Youtube API data into the top popular recommender. `KNN_collab.ipynb` contains results of a KNN collaborative filtering model from surprise package and a pure collaborative filtering from LightFM.
 
 **Templates**: Holds html files for the various endpoints.
 
