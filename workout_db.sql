@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS user_disliked_items
     workout_id INT
 );
 
--- manually upload fb_workouts.csv into table fbworkouts_meta with the following datatypes
+-- fb_workouts_meta table: manually uploaded fb_workouts_meta.csv with the following datatypes
 --      workout_id INT PRIMARY KEY,
 --      workout_title TEXT,
 --      fb_link TEXT,
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS user_disliked_items
 --      training_type VARCHAR(100),
 --      body_focus VARCHAR(100)
 
--- manually upload fb_workouts.csv into table fbworkouts with the following datatypes
+-- fb_workouts table: manually uploaded fb_workouts.csv with the following datatypes
 --      workout_id INT FOREIGN KEY REFERENCES fbworkouts_meta(workout_id),
 --      duration INT,
 --      min_calorie_burn INT,
@@ -99,6 +99,7 @@ CREATE TABLE IF NOT EXISTS user_disliked_items
 --      sandbag INT,
 --      stationary_bike INT
 
--- manually upload user_items_interactions.csv (users with less than 5 interactions dropped)
+-- user_item_interaction table: manually uploaded user_items_interactions.csv with the following datatypes
+-- note: users with less than 5 interactions were previously dropped in user_items_interactions.csv
 --      user_id INT
 --      workout_id INT,

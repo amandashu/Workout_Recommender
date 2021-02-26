@@ -7,6 +7,10 @@ body {
   padding-top: 56px;
 }
 
+.errors {
+  color: #45A29E;
+}
+
 /*
 Attributes below derived from bootstrap.css
 */
@@ -57,9 +61,9 @@ body {
 
 .alert-small {
   left: 0;
-  margin: auto; 
+  margin: auto;
   right: 0;
-  text-align: center; 
+  text-align: center;
   top: 1em;
   width: 80%;
 }

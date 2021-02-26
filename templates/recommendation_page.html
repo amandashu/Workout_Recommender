@@ -14,8 +14,12 @@
           <header class="jumbotron my-4">
             <h1 class="display-3"> Hello {{ g.user['name'] }}!</h1>
             <p class="lead"> Choose from one of our workout filtering options. You can either choose recommendations
-              personalized for you, the most popular workouts amongst
-              all users, or workouts at random!</p>
+              personalized for you, the most popular workouts amongst all users, or workouts at random! </p>
+            <p class="lead font-italic">
+            All your recommended workouts are filtered to match your workout preferences and available equipment. You can update your update
+             your preferences anytime <a href="{{ url_for('update') }}">here</a>. Feel free to click "like" for workouts you enjoy,
+             as this will give better recommendations for the "Recommended For You" option. Any workouts you "dislike" will be not be shown again.
+          </p>
 
             <form id="engine_select_form" class="form-inline justify-content-center mr-2" action="/" method="POST"
               enctype="multipart/form-data">
@@ -129,41 +133,11 @@
 {% endblock content %}
 
 {% block scripts %}
-<!-- Slick CSS-->
+<!-- Slick CSS -->
 <script type="text/javascript" src="{{ url_for('static',filename='libraries/slick/slick.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static',filename='js/carousel.js') }}"></script>
 <script>
-  // function to show loading page
-  function findWorkouts() {
-    let recommendations = document.getElementById("recommendations");
-    recommendations.style.display = "none";
-
-    let loading = document.getElementById("loading");
-    loading.style.display = "block";
-  }
-
-  if ({{ rec_engine | tojson | safe }}) {
-    // keeps rec_engine to be selected aftering submitting
-    document.getElementById('rec-engine').value = {{ rec_engine | tojson | safe }};
-  } else {
-    // gives empty div a height when there rec_engine is not defined
-    // so footer does not move up
-    document.getElementById('recommendations').style.height = '70vh';
-  }
-
-  // disable find workouts button at first
-  let find_workouts = document.getElementById('find_workouts')
-  let hidden_selection = document.getElementById('hidden_selection')
-  if (hidden_selection.selected == true) {
-    find_workouts.disabled = true;
-  }
-
-  // to enable submit button after selecting from rec engine
-  function enableSubmit() {
-    if (hidden_selection.selected == false) {
-      find_workouts.disabled = false;
-    }
-  }
-
+var recEngine = {{ rec_engine | tojson | safe }}
 </script>
+<script type="text/javascript" src="{{ url_for('static',filename='js/rec.js') }}"></script>
 {% endblock scripts %}
