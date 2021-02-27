@@ -170,16 +170,17 @@ def recommendation_page():
     rec_dct = {}
     for body_focus in pred_dct.keys():
         query = "SELECT * FROM fbworkouts_meta WHERE workout_id IN (" + str(
-            pred_dct[body_focus])[1:-1] + ")"
+             pred_dct[body_focus])[1:-1] + ")"
         results = get_rec_sorted(pd.read_sql_query(
             query, db.connection), pred_scores)
         results['liked'] = results['workout_id'].apply(
             lambda x: x in list(all_user_interactions['workout_id']))
         results['disliked'] = results['workout_id'].apply(
             lambda x: x in list(user_disliked_items['workout_id']))
-        
+
         rec_dct[body_focus.replace(
             '_', ' ').capitalize().replace('b', 'B')] = results[~results['disliked']]
+    print(rec_dct['Upper Body'])
     return render_template("recommendation_page.html", rec_engine=rec_engine, rec_dct=rec_dct)
 
 
@@ -202,29 +203,95 @@ def update():
     return render_template('update_workout_info.html', form=form, user=user_dct)
 
 
-@app.route('/logout')
+@app.route('/history', methods=['GET', 'POST'])
+def history_page():
+    # if user is not logged in, redirect to login page
+    if g.user is None:
+        return redirect(url_for('login_page'))
+
+    interaction_type = request.form.get("type")
+    print(request.form.get("type"), request.form.get(
+        "interaction-type"), request.form)
+
+    if interaction_type is None:
+        return render_template("history_page.html", interaction_type=None, rec_dct=None)
+
+    # user's previous interactions
+    all_user_interactions = pd.read_sql_query(
+        "SELECT * FROM workout.user_item_interaction WHERE user_id = " + str(
+            session['user_id']), db.connection
+    )
+
+    # user's disliked items
+    user_disliked_items = pd.read_sql_query(
+        "SELECT * FROM workout.user_disliked_items WHERE user_id = " + str(
+            session['user_id']), db.connection
+    )
+
+    if interaction_type == "liked":
+        user_interacted = all_user_interactions
+    else:
+        user_interacted = user_disliked_items
+    pred, scores = list(user_interacted['workout_id']), range(
+        len(user_interacted))
+
+    # dct for predictions to scores
+    pred_scores = {pred[i]: scores[i] for i in range(len(pred))}
+
+    # get fbworkouts dataframe
+    query = "SELECT * FROM fbworkouts"
+    results = pd.read_sql_query(query, db.connection)
+
+    # dictionary with keys as body focus and values as filtered list of workouts
+    pred_dct = create_rec_lists(results, g.user)
+
+    # dictionary with keys as body focus and values as dataframes with
+    # fb_workouts_meta schema and rows sorted by scores
+    rec_dct = {}
+    for body_focus in pred_dct.keys():
+        if len(user_interacted) == 0:
+            user_interacted_index = [999999]
+        else:
+            user_interacted_index = user_interacted['workout_id']
+
+        query = "SELECT * FROM fbworkouts_meta WHERE workout_id IN (" + str(
+            pred_dct[body_focus])[1:-1] + ") AND workout_id IN (" + str(list(user_interacted_index))[1:-1] + ")"
+        results = pd.read_sql_query(query, db.connection)
+        results['score'] = 0
+        results['liked'] = results['workout_id'].apply(
+            lambda x: x in list(all_user_interactions['workout_id']))
+        results['disliked'] = results['workout_id'].apply(
+            lambda x: x in list(user_disliked_items['workout_id']))
+
+        rec_dct[body_focus.replace(
+            '_', ' ').capitalize().replace('b', 'B')] = results
+    print(rec_dct['Upper Body'])
+    return render_template("history_page.html", interaction_type=interaction_type, rec_dct=rec_dct)
+
+
+@ app.route('/logout')
 def logout():
     session.pop('user_id', None)  # removes session if currently in one
     return redirect(url_for('login_page'))
 
 
-@app.route('/about')
+@ app.route('/about')
 def about_page():
     return render_template('about_page.html')
 
 
-@app.route('/contact')
+@ app.route('/contact')
 def contact_page():
     return render_template('contact_page.html')
 
 
-@app.route('/favicon.ico')
+@ app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
-@app.route('/record_like/<user_id>/<workout_id>')
+@ app.route('/record_like/<user_id>/<workout_id>')
 def record_like(user_id, workout_id):
     """
     Handler for like button event (record like)
@@ -241,20 +308,14 @@ def record_like(user_id, workout_id):
 
         cur.execute(
             "INSERT INTO workout.user_item_interaction (user_id, workout_id) VALUES (%s, %s);", (int(user_id), int(workout_id)))
-
-        print('recorded like')
     else:
         pass
-        # cur = db.connection.cursor()
-        # cur.execute(
-        #     "DELETE FROM workout.user_item_interaction WHERE user_id = %s and workout_id = %s;", (int(user_id), int(workout_id)))
-
-        # print('removed like!')
 
     cur.connection.commit()
     return user_id + " " + workout_id
 
-@app.route('/remove_like/<user_id>/<workout_id>')
+
+@ app.route('/remove_like/<user_id>/<workout_id>')
 def remove_like(user_id, workout_id):
     """
     Handler for like button event (remove like)
@@ -268,22 +329,15 @@ def remove_like(user_id, workout_id):
     cur = db.connection.cursor()
     if len(all_user_interactions) == 0:
         pass
-        
-        # cur = db.connection.cursor()
-        # cur.execute(
-        #     "INSERT INTO workout.user_item_interaction (user_id, workout_id) VALUES (%s, %s);", (int(user_id), int(workout_id)))
-
-        # print('recorded like')
     else:
         cur.execute(
             "DELETE FROM workout.user_item_interaction WHERE user_id = %s and workout_id = %s;", (int(user_id), int(workout_id)))
 
-        print('removed like!')
-
     cur.connection.commit()
     return user_id + " " + workout_id
 
-@app.route('/record_dislike/<user_id>/<workout_id>')
+
+@ app.route('/record_dislike/<user_id>/<workout_id>')
 def record_dislike(user_id, workout_id):
     """
     Handler for dislike button event (record like)
@@ -295,26 +349,20 @@ def record_dislike(user_id, workout_id):
     )
 
     cur = db.connection.cursor()
-        
+
     if len(user_disliked_items) == 0:
         # never disliked
 
         cur.execute(
             "INSERT INTO workout.user_disliked_items (user_id, workout_id) VALUES (%s, %s);", (int(user_id), int(workout_id)))
-
-        print('recorded dislike')
     else:
         pass
-        # cur = db.connection.cursor()
-        # cur.execute(
-        #     "DELETE FROM workout.user_disliked_items WHERE user_id = %s and workout_id = %s;", (int(user_id), int(workout_id)))
-
-        # print('removed dislike!')
 
     cur.connection.commit()
     return user_id + " " + workout_id
 
-@app.route('/remove_dislike/<user_id>/<workout_id>')
+
+@ app.route('/remove_dislike/<user_id>/<workout_id>')
 def remove_dislike(user_id, workout_id):
     """
     Handler for dislike button event (remove disliking)
@@ -328,17 +376,9 @@ def remove_dislike(user_id, workout_id):
     cur = db.connection.cursor()
     if len(user_disliked_items) == 0:
         pass
-
-        # cur = db.connection.cursor()
-        # cur.execute(
-        #     "INSERT INTO workout.user_disliked_items (user_id, workout_id) VALUES (%s, %s);", (int(user_id), int(workout_id)))
-
-        # print('recorded dislike')
     else:
         cur.execute(
             "DELETE FROM workout.user_disliked_items WHERE user_id = %s and workout_id = %s;", (int(user_id), int(workout_id)))
-
-        print('removed dislike!')
 
     cur.connection.commit()
     return user_id + " " + workout_id
