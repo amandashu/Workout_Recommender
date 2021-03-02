@@ -113,3 +113,11 @@ From: https://www.w3schools.com/howto/howto_js_fullscreen_overlay.asp
   background-color: #45A29E;
   color: whitesmoke;
 }
+
+.form-check-input ~ label {
+  color: white;
+}
+
+.toggle-btn:hover {
+  background-color: grey !important;
+}

@@ -89,38 +89,67 @@
       <h1 class="display-5" style="color:white;">Loading your Recommendations...</h1>
     </div>
     <div id="recommendations">
+      <div class="row justify-content-center">
+        <div class="col-6">
+          <p class="display-6" style="color: white; margin-bottom: 5px;">Show/Hide Body Focus Categories</p>
+          <div class="body-focus-selection btn-group btn-group-toggle" data-toggle="buttons">
+            <div class="btn btn-primary active toggle-btn" onclick='$("#Upper\\ Body").toggle()'>Upper Body</div>
+            <div class="btn btn-primary active toggle-btn" onclick='$("#Lower\\ Body").toggle()'>Lower Body</div>
+            <div class="btn btn-primary active toggle-btn" onclick='$("#Core").toggle()'>Core</div>
+            <div class="btn btn-primary active toggle-btn" onclick='$("#Total\\ Body").toggle()'>Total Body</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <form>
+            <div class="form-group">
+              <label for="tile-size" style="color: white;" class="display-6">Number of Tiles to Display</label>
+              <select class="form-control" id="tile-size-selection" onChange="resizeCarousel(this.value);">
+                <option value="none" selected disabled hidden>Loading...</option> 
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+            </div>
+          </form>
+        </div>
+
+      </div>
       <!-- div will be empty if no rec_engine is select -->
       {% if rec_engine %}
       {% for body_focus in rec_dct.keys() %}
         {% set workouts = rec_dct[body_focus] %}
-        <h2 class="display-4" style="color:white;">{{ body_focus}}</h2>
-        <div class="container-fluid">
-          <!-- Hidden by default, will become visible once Slick can reload the page-->
-          <div class="row text-center carousel loaded" style="visibility: hidden;" >
-            {% for i, w in workouts.iloc[:9].iterrows() %}
-            <div class="col-md-12 mb-4 workout-card">
-              <div class="card h-100">
-                <img class="cropped-yt-thumb card-img-top"
-                  data-lazy="{{'https://img.youtube.com/vi/' + w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') + '/0.jpg'}}"
-                  alt="">
-                <div class="card-body card-body-carousel">
-                  <h4 id="workout-title-index-{{ i }}" class="card-title">{{ w['workout_title'] }}</h4>
-                  <p id="workout-text-index-{{ i }}" class="card-text">Equipment: {{ w['equipment'] }} <br> Training Type:
-                    {{ w['training_type'] }} <br> Body Focus: {{ w['body_focus'] }}</p>
-                </div>
-                <div class="card-footer">
-                  <!--{{ w['youtube_link'] }}-->
-                  <p id="liked-status-{{ i }}" style="visibility: {{ 'hidden' if not w['liked'] }}">&#10084;&#65039; Liked<p>
-                  <p id="disliked-status-{{ i }}" style="visibility: {{ 'hidden' if not w['disliked'] }}"><p>
-                  <a id="startWorkout-index-{{ i }}" workout_id="{{w['workout_id']}}" onclick='openPlayerOverlay("{{ i }}")' class="btn btn-primary">Start Workout!</a>
-                  <!--Video Embed Driver Below ( these are hidden from view and referenced by overlay.js :) )-->
-                  <span id="video-index-{{ i }}" style="display: none;">{{'https://www.youtube-nocookie.com/embed/' +
-                    w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') }}</span>
-                  <span id="fb-link-index-{{ i }}" style="display: none;">{{ w['fb_link'] }}</span>
+        <div id="{{ body_focus}}">
+          <h2 class="display-4" style="color:white;">{{ body_focus}}</h2>
+          <div class="container-fluid">
+            <!-- Hidden by default, will become visible once Slick can reload the page-->
+            <div class="row text-center carousel loaded" style="visibility: hidden;" >
+              {% for i, w in workouts.iloc[:9].iterrows() %}
+              <div class="col-md-12 mb-4 workout-card">
+                <div class="card h-100">
+                  <img class="cropped-yt-thumb card-img-top"
+                    data-lazy="{{'https://img.youtube.com/vi/' + w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') + '/0.jpg'}}"
+                    alt="">
+                  <div class="card-body card-body-carousel">
+                    <h4 id="workout-title-index-{{ i }}" class="card-title">{{ w['workout_title'] }}</h4>
+                    <p id="workout-text-index-{{ i }}" class="card-text">Equipment: {{ w['equipment'] }} <br> Training Type:
+                      {{ w['training_type'] }} <br> Body Focus: {{ w['body_focus'] }}</p>
+                  </div>
+                  <div class="card-footer">
+                    <!--{{ w['youtube_link'] }}-->
+                    <p id="liked-status-{{ i }}" style="visibility: {{ 'hidden' if not w['liked'] }}">&#10084;&#65039; Liked<p>
+                    <p id="disliked-status-{{ i }}" style="visibility: {{ 'hidden' if not w['disliked'] }}"><p>
+                    <a id="startWorkout-index-{{ i }}" workout_id="{{w['workout_id']}}" onclick='openPlayerOverlay("{{ i }}")' class="btn btn-primary">Start Workout!</a>
+                    <!--Video Embed Driver Below ( these are hidden from view and referenced by overlay.js :) )-->
+                    <span id="video-index-{{ i }}" style="display: none;">{{'https://www.youtube-nocookie.com/embed/' +
+                      w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') }}</span>
+                    <span id="fb-link-index-{{ i }}" style="display: none;">{{ w['fb_link'] }}</span>
+                  </div>
                 </div>
               </div>
+              {% endfor %}
             </div>
-            {% endfor %}
           </div>
         </div>
         {% endfor %}

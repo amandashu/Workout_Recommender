@@ -1,3 +1,4 @@
+/* This file controls style of the cards that displays the recommendations */
 function setCardHeight() {
     // Get cards
     let cards = $('.card-body-carousel');
@@ -21,20 +22,27 @@ function setCardHeight() {
 }
 
 $(document).ready(function(){
+    // read carousel size
+    size = localStorage.getItem("size")
+    if (size == null){
+        localStorage.setItem("size", 3);
+        size = localStorage.getItem("size")
+    }
+    document.getElementById('tile-size-selection').value=size;
     // page slider
     $('.carousel').slick({
         dots: true,
-        infinite: false,
-        speed: 500,
-        slidesToShow: 3,
-        slidesToScroll: 3,
+        infinite: true,
+        speed: 200,
+        slidesToShow: parseInt(size),
+        slidesToScroll: parseInt(size),
         lazyLoad: 'anticipated',
         responsive: [
             {
             breakpoint: 1024,
             settings: {
-                slidesToShow: 3,
-                slidesToScroll: 3,
+                slidesToShow: parseInt(size),
+                slidesToScroll: parseInt(size),
                 infinite: true,
                 dots: true
             }
@@ -62,6 +70,6 @@ $(document).ready(function(){
 });
 
 function resizeCarousel(size) {
-    $('.carousel').slick('slickSetOption', 'slidesToShow', size, refresh=true);
-    setCardHeight();
+    localStorage.setItem("size", size);
+    location.reload()
 }
