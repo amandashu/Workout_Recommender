@@ -1,8 +1,5 @@
 CREATE DATABASE IF NOT EXISTS workout;
 
-
-DROP TABLE IF EXISTS users;
-
 -- create users table
 CREATE TABLE IF NOT EXISTS users
 (

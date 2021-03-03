@@ -7,11 +7,11 @@ function findWorkouts() {
   loading.style.display = "block";
 }
 
-if (recEngine) {
-  // keeps rec_engine to be selected aftering submitting
-  document.getElementById('rec-engine').value = recEngine;
+if (dropdown_option) {
+  // keeps dropdown option to be selected aftering submitting
+  document.getElementById('dropdown_option').value = dropdown_option;
 } else {
-  // gives empty div a height when there rec_engine is not defined
+  // gives empty div a height when there dropdow option is not defined
   // so footer does not move up
   document.getElementById('recommendations').style.height = '70vh';
 }
@@ -23,7 +23,7 @@ if (hidden_selection.selected == true) {
   find_workouts.disabled = true;
 }
 
-// to enable submit button after selecting from rec engine
+// to enable submit button after selecting from dropdown
 function enableSubmit() {
   if (hidden_selection.selected == false) {
     find_workouts.disabled = false;

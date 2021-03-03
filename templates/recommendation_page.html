@@ -1,172 +1,40 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "workout_lists_base.html" %}
+{% block header %}
+<header class="jumbotron my-4">
+  <h1 class="display-3"> Hello {{ g.user['name'] }}!</h1>
+  <p class="lead"> Choose from one of our workout filtering options. You can either choose recommendations
+    personalized for you, the most popular workouts amongst all users, or workouts at random! </p>
 
-<script src="{{ url_for('static',filename='js/overlay.js') }}"></script>
+  <p class="lead font-italic">
+    All your recommended workouts are filtered to match your workout preferences and available equipment. You can update
+    your preferences anytime <a href="{{ url_for('update') }}">here</a>. Feel free to click "like" for workouts you enjoy,
+    as this will give better recommendations for the "Recommended For You" option. Any workouts you "dislike" will be not be shown again.
+  </p>
 
-<link rel="stylesheet" type="text/css" href= "{{ url_for('static',filename='styles/carousel.css') }}"/>
+  <!-- Choose a recommender-->
+  <form id="engine_select_form" class="form-inline justify-content-center mr-2" action="/" method="POST" enctype="multipart/form-data">
+    <select class="form-control form-control-lg " id="dropdown_option" name="engine" onChange="enableSubmit()">
+      <option value="" disabled selected hidden id="hidden_selection">Choose a Recommender</option>
+      <option value="random">Random</option>
+      <option value="toppop">Most Popular</option>
+      <option value="lightfm">Recommmended for You</option>
+    </select>
+    <input href="#" id="find_workouts" class="btn btn-primary btn-lg ml-2" type="submit" value="Find Workouts!" onClick="findWorkouts()"> </input>
+  </form>
 
-<!-- Page Content -->
-<div class="container">
-
-  <div class="container-fluid">
-      <div class="row text-center">
-        <div class=col>
-          <header class="jumbotron my-4">
-            <h1 class="display-3"> Hello {{ g.user['name'] }}!</h1>
-            <p class="lead"> Choose from one of our workout filtering options. You can either choose recommendations
-              personalized for you, the most popular workouts amongst all users, or workouts at random! </p>
-            <p class="lead font-italic">
-            All your recommended workouts are filtered to match your workout preferences and available equipment. You can update your update
-             your preferences anytime <a href="{{ url_for('update') }}">here</a>. Feel free to click "like" for workouts you enjoy,
-             as this will give better recommendations for the "Recommended For You" option. Any workouts you "dislike" will be not be shown again.
-          </p>
-
-            <form id="engine_select_form" class="form-inline justify-content-center mr-2" action="/" method="POST"
-              enctype="multipart/form-data">
-              <select class="form-control form-control-lg " id="rec-engine" name="engine" onChange="enableSubmit()">
-                <option value="" disabled selected hidden id="hidden_selection">Choose a Recommender</option>
-                <option value="random">Random</option>
-                <option value="toppop">Most Popular</option>
-                <option value="lightfm">Recommmended for You</option>
-              </select>
-              <input href="#" id="find_workouts" class="btn btn-primary btn-lg ml-2" type="submit" value="Find Workouts!" onClick="findWorkouts()"> </input>
-            </form>
-
-            <!-- Survey Alert-->
-            <div class="alert alert-warning alert-dismissible fade show alert-small center-block" role="alert">
-              <div class="text-center">
-                <strong>We need your help!</strong> Please fill out <a target="_blank" href='https://forms.gle/1J3249J3RqJNKWKZ6'>our survey</a> and let us know what you think of our site!
-              </div>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-            </div>
-
-          </header>
-        </div>
-      </div>
+  <!-- Survey Alert-->
+  <div class="alert alert-warning alert-dismissible fade show alert-small center-block" role="alert">
+    <div class="text-center">
+      <strong>We need your help!</strong> Please fill out <a target="_blank" href='https://forms.gle/1J3249J3RqJNKWKZ6'>our survey</a> and
+      let us know what you think of our site!
     </div>
-
-  <!-- Workout Popup Overlay (this is hidden by default) -->
-  <div id="overlay-display" class="overlay">
-    <div class="container-fluid">
-      <div class="row text-center">
-        <div class="col-lg-1 hidden-sm"></div>
-        <div class="col-lg-10 col-sm-12">
-          <!-- Button to close the overlay navigation -->
-          <!-- Overlay content -->
-          <div class="overlay-content d-flex" style="margin: 30 30 30 30;">
-            <div class="card h-100 card-overlay">
-              <div class="card-body">
-                <h4 id="overlay-workout-title" class="card-title display-5">Loading...</h4>
-                <div class="">
-                  <iframe style="width: 56vh; height: 32vh; --aspect-ratio: 3 / 4 !important;" class="card-img-top video-container" id="overlay-video" src="" frameborder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-                </div>
-                <p id="overlay-workout-text" class="card-text">Loading...</p>
-              </div>
-              <div class="card-footer">
-                <a id="like" class="btn btn-primary"
-                  user_id="{{ session['user_id'] }}">Like</a>
-                <a id="dislike" class="btn btn-primary">Dislike</a>
-                <a class="btn btn-primary" onclick="overlayNextVideo()">Skip</a>
-                <a class="btn btn-primary" id="overlay-fb-link" href="#" target="_blank">FitnessBlender Page</a>
-                <a class="btn btn-primary closebtn" href="javascript:void(0)" onclick="closePlayerOverlay()">Close</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-1 hidden-sm mb-4"></div>
-      </div>
-    </div>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
   </div>
+<header>
+{% endblock header %}
 
-  <!-- Page Features -->
-  <div class="container">
-    <div id="loading" class="text-center" style="display:none;">
-      <img src="{{ url_for('static',filename='images/teodor.gif') }}" alt="loading gif" style="width:400px; heigh:auto;"/>
-      <h1 class="display-5" style="color:white;">Loading your Recommendations...</h1>
-    </div>
-    <div id="recommendations">
-      <div class="row justify-content-center">
-        <div class="col-6">
-          <p class="display-6" style="color: white; margin-bottom: 5px;">Show/Hide Body Focus Categories</p>
-          <div class="body-focus-selection btn-group btn-group-toggle" data-toggle="buttons">
-            <div class="btn btn-primary active toggle-btn" onclick='$("#Upper\\ Body").toggle()'>Upper Body</div>
-            <div class="btn btn-primary active toggle-btn" onclick='$("#Lower\\ Body").toggle()'>Lower Body</div>
-            <div class="btn btn-primary active toggle-btn" onclick='$("#Core").toggle()'>Core</div>
-            <div class="btn btn-primary active toggle-btn" onclick='$("#Total\\ Body").toggle()'>Total Body</div>
-          </div>
-        </div>
-        <div class="col-4">
-          <form>
-            <div class="form-group">
-              <label for="tile-size" style="color: white;" class="display-6">Number of Tiles to Display</label>
-              <select class="form-control" id="tile-size-selection" onChange="resizeCarousel(this.value);">
-                <option value="none" selected disabled hidden>Loading...</option> 
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-              </select>
-            </div>
-          </form>
-        </div>
-
-      </div>
-      <!-- div will be empty if no rec_engine is select -->
-      {% if rec_engine %}
-      {% for body_focus in rec_dct.keys() %}
-        {% set workouts = rec_dct[body_focus] %}
-        <div id="{{ body_focus}}">
-          <h2 class="display-4" style="color:white;">{{ body_focus}}</h2>
-          <div class="container-fluid">
-            <!-- Hidden by default, will become visible once Slick can reload the page-->
-            <div class="row text-center carousel loaded" style="visibility: hidden;" >
-              {% for i, w in workouts.iloc[:9].iterrows() %}
-              <div class="col-md-12 mb-4 workout-card">
-                <div class="card h-100">
-                  <img class="cropped-yt-thumb card-img-top"
-                    data-lazy="{{'https://img.youtube.com/vi/' + w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') + '/0.jpg'}}"
-                    alt="">
-                  <div class="card-body card-body-carousel">
-                    <h4 id="workout-title-index-{{ i }}" class="card-title">{{ w['workout_title'] }}</h4>
-                    <p id="workout-text-index-{{ i }}" class="card-text">Equipment: {{ w['equipment'] }} <br> Training Type:
-                      {{ w['training_type'] }} <br> Body Focus: {{ w['body_focus'] }}</p>
-                  </div>
-                  <div class="card-footer">
-                    <!--{{ w['youtube_link'] }}-->
-                    <p id="liked-status-{{ i }}" style="visibility: {{ 'hidden' if not w['liked'] }}">&#10084;&#65039; Liked<p>
-                    <p id="disliked-status-{{ i }}" style="visibility: {{ 'hidden' if not w['disliked'] }}"><p>
-                    <a id="startWorkout-index-{{ i }}" workout_id="{{w['workout_id']}}" onclick='openPlayerOverlay("{{ i }}")' class="btn btn-primary">Start Workout!</a>
-                    <!--Video Embed Driver Below ( these are hidden from view and referenced by overlay.js :) )-->
-                    <span id="video-index-{{ i }}" style="display: none;">{{'https://www.youtube-nocookie.com/embed/' +
-                      w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') }}</span>
-                    <span id="fb-link-index-{{ i }}" style="display: none;">{{ w['fb_link'] }}</span>
-                  </div>
-                </div>
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-      {% endif %}
-    </div>
-  </div>
-</div>
-<!-- /.container -->
-{% endblock content %}
-
-{% block scripts %}
-<!-- Slick CSS -->
-<script type="text/javascript" src="{{ url_for('static',filename='libraries/slick/slick.min.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static',filename='js/carousel.js') }}"></script>
-<script>
-var recEngine = {{ rec_engine | tojson | safe }}
-</script>
-<script type="text/javascript" src="{{ url_for('static',filename='js/rec.js') }}"></script>
-{% endblock scripts %}
+{% block loadingMessage %}
+  <h1 class="display-5" style="color:white;">Loading your Recommendations...</h1>
+{% endblock loadingMessage %}

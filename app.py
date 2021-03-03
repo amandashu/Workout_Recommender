@@ -119,7 +119,7 @@ def recommendation_page():
 
     rec_engine = request.form.get("engine")
     if rec_engine is None:
-        return render_template("recommendation_page.html", rec_engine=None, rec_dct=None)
+        return render_template("recommendation_page.html", dropdown_option=None, rec_dct=None)
 
     # user's previous interactions
     all_user_interactions = pd.read_sql_query(
@@ -183,8 +183,8 @@ def recommendation_page():
 
         rec_dct[body_focus.replace(
             '_', ' ').capitalize().replace('b', 'B')] = results[~results['disliked']]
-    print(rec_dct['Upper Body'])
-    return render_template("recommendation_page.html", rec_engine=rec_engine, rec_dct=rec_dct)
+    # print(rec_dct['Upper Body'])
+    return render_template("recommendation_page.html", dropdown_option=rec_engine, rec_dct=rec_dct)
 
 
 @app.route('/update', methods=['GET', 'POST'])
@@ -213,11 +213,11 @@ def history_page():
         return redirect(url_for('login_page'))
 
     interaction_type = request.form.get("type")
-    print(request.form.get("type"), request.form.get(
-        "interaction-type"), request.form)
+    # print(request.form.get("type"), request.form.get(
+    #     "interaction-type"), request.form)
 
     if interaction_type is None:
-        return render_template("history_page.html", interaction_type=None, rec_dct=None)
+        return render_template("history_page.html", dropdown_option=None, rec_dct=None)
 
     # user's previous interactions
     all_user_interactions = pd.read_sql_query(
@@ -268,33 +268,33 @@ def history_page():
 
         rec_dct[body_focus.replace(
             '_', ' ').capitalize().replace('b', 'B')] = results
-    print(rec_dct['Upper Body'])
-    return render_template("history_page.html", interaction_type=interaction_type, rec_dct=rec_dct)
+    # print(rec_dct['Upper Body'])
+    return render_template("history_page.html", dropdown_option=interaction_type, rec_dct=rec_dct)
 
 
-@ app.route('/logout')
+@app.route('/logout')
 def logout():
     session.pop('user_id', None)  # removes session if currently in one
     return redirect(url_for('login_page'))
 
 
-@ app.route('/about')
+@app.route('/about')
 def about_page():
     return render_template('about_page.html')
 
 
-@ app.route('/contact')
+@app.route('/contact')
 def contact_page():
     return render_template('contact_page.html')
 
 
-@ app.route('/favicon.ico')
+@app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
-@ app.route('/record_like/<user_id>/<workout_id>')
+@app.route('/record_like/<user_id>/<workout_id>')
 def record_like(user_id, workout_id):
     """
     Handler for like button event (record like)
@@ -318,7 +318,7 @@ def record_like(user_id, workout_id):
     return user_id + " " + workout_id
 
 
-@ app.route('/remove_like/<user_id>/<workout_id>')
+@app.route('/remove_like/<user_id>/<workout_id>')
 def remove_like(user_id, workout_id):
     """
     Handler for like button event (remove like)
@@ -340,7 +340,7 @@ def remove_like(user_id, workout_id):
     return user_id + " " + workout_id
 
 
-@ app.route('/record_dislike/<user_id>/<workout_id>')
+@app.route('/record_dislike/<user_id>/<workout_id>')
 def record_dislike(user_id, workout_id):
     """
     Handler for dislike button event (record like)
@@ -365,7 +365,7 @@ def record_dislike(user_id, workout_id):
     return user_id + " " + workout_id
 
 
-@ app.route('/remove_dislike/<user_id>/<workout_id>')
+@app.route('/remove_dislike/<user_id>/<workout_id>')
 def remove_dislike(user_id, workout_id):
     """
     Handler for dislike button event (remove disliking)

@@ -1,155 +1,20 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "workout_lists_base.html" %}
+{% block header %}
+<header class="jumbotron my-4">
+  <h1 class="display-3"> Hello {{ g.user['name'] }}!</h1>
+  <p class="lead"> See your workout history here! You can find any of the workouts you've liked or disliked before.</p>
 
-<script src="{{ url_for('static',filename='js/overlay.js') }}"></script>
+  <form id="engine_select_form" class="form-inline justify-content-center mr-2" action="/history" method="POST" enctype="multipart/form-data">
+    <select class="form-control form-control-lg " id="dropdown_option" name="type" onChange="enableSubmit()">
+      <option value="" disabled selected hidden id="hidden_selection">Choose an interaction</option>
+      <option value="liked">Liked</option>
+      <option value="disliked">Disliked</option>
+    </select>
+    <input href="#" id="find_workouts" class="btn btn-primary btn-lg ml-2" type="submit" value="View History!" onClick="findWorkouts()"> </input>
+  </form>
+</header>
+{% endblock header %}
 
-<link rel="stylesheet" type="text/css" href= "{{ url_for('static',filename='styles/carousel.css') }}"/>
-
-<!-- Page Content -->
-<div class="container">
-
-  <div class="container-fluid">
-      <div class="row text-center">
-        <div class=col>
-          <header class="jumbotron my-4">
-            <h1 class="display-3"> Hello {{ g.user['name'] }}!</h1>
-            <p class="lead"> Choose from one of your workout history. You can either choose workouts you've liked or disliked before!</p>
-
-            <form id="engine_select_form" class="form-inline justify-content-center mr-2" action="/history" method="POST"
-              enctype="multipart/form-data">
-              <select class="form-control form-control-lg " id="interaction-type" name="type" onChange="enableSubmit()">
-                <option value="" disabled selected hidden id="hidden_selection">Choose an interaction</option>
-                <option value="liked">Liked</option>
-                <option value="disliked">Disliked</option>
-              </select>
-              <input href="#" id="view_history" class="btn btn-primary btn-lg ml-2" type="submit" value="View History!" onClick="viewHistory()"> </input>
-            </form>
-          </header>
-        </div>
-      </div>
-    </div>
-
-  <!-- Video Overlay (this is hidden by default) -->
-  <div id="overlay-display" class="overlay">
-    <div class="container-fluid">
-      <div class="row text-center">
-        <div class="col-lg-1 col-md-6"></div>
-        <div class="col-lg-10 col-md-6">
-          <!-- Button to close the overlay navigation -->
-          <!-- Overlay content -->
-          <div class="overlay-content" style="margin: 30 30 30 30;">
-
-            <div class="card h-100 card-overlay">
-              <div class="card-body">
-                <h4 id="overlay-workout-title" class="card-title display-5">Loading...</h4>
-                <iframe class="card-img-top" id="overlay-video"
-                  style="width: 560px !important; height: 315px !important;" src="" frameborder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-                <p id="overlay-workout-text" class="card-text">Loading...</p>
-              </div>
-              <div class="card-footer">
-                <a id="like" class="btn btn-primary"
-                  user_id="{{ session['user_id'] }}">Like</a>
-                <a id="dislike" class="btn btn-primary">Dislike</a>
-                <a class="btn btn-primary" onclick="overlayNextVideo()">Skip</a>
-                <a class="btn btn-primary" id="overlay-fb-link" href="#" target="_blank">FitnessBlender Page</a>
-                <a class="btn btn-primary closebtn" href="javascript:void(0)" onclick="closePlayerOverlay()">Close</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-1 col-md-6 mb-4"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Page Features -->
-  <div class="container">
-    <div id="loading" class="text-center" style="display:none;">
-      <img src="{{ url_for('static',filename='images/teodor.gif') }}" alt="loading gif" style="width:400px; heigh:auto;"/>
-      <h1 class="display-5" style="color:white;">Loading your history...</h1>
-    </div>
-    <div id="recommendations">
-      <!-- div will be empty if no rec_engine is select -->
-      {% if interaction_type %}
-      {% for body_focus in rec_dct.keys() %}
-        {% set workouts = rec_dct[body_focus] %}
-        <h1 class="display-3" style="color:white;">{{ body_focus}}</h1>
-        <div class="container-fluid">
-          <!-- Hidden by default, will become visible once Slick can reload the page-->
-          <div class="row text-center carousel loaded" style="visibility: hidden;" >
-            {% for i, w in workouts.iloc[:9].iterrows() %}
-            <div class="col-md-12 mb-4 workout-card">
-              <div class="card h-100">
-                <img class="cropped-yt-thumb card-img-top"
-                  data-lazy="{{'https://img.youtube.com/vi/' + w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') + '/0.jpg'}}"
-                  alt="">
-                <div class="card-body card-body-carousel">
-                  <h4 id="workout-title-index-{{ i }}" class="card-title">{{ w['workout_title'] }}</h4>
-                  <p id="workout-text-index-{{ i }}" class="card-text">Equipment: {{ w['equipment'] }} <br> Training Type:
-                    {{ w['training_type'] }} <br> Body Focus: {{ w['body_focus'] }}</p>
-                </div>
-                <div class="card-footer">
-                  <!--{{ w['youtube_link'] }}-->
-                  <p id="liked-status-{{ i }}" style="visibility: {{ 'hidden' if not w['liked'] }}">&#10084;&#65039; Liked<p>
-                  <p id="disliked-status-{{ i }}" style="visibility: {{ 'hidden' if not w['disliked'] }}"><p>
-                  <a id="startWorkout-index-{{ i }}" workout_id="{{w['workout_id']}}" onclick='openPlayerOverlay("{{ i }}", "{{ w['liked'] }}", "{{ w['disliked'] }}")' class="btn btn-primary">Start Workout!</a>
-                  <!--Video Embed Driver Below ( these are hidden from view and referenced by overlay.js :) )-->
-                  <span id="video-index-{{ i }}" style="display: none;">{{'https://www.youtube-nocookie.com/embed/' +
-                    w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') }}</span>
-                  <span id="fb-link-index-{{ i }}" style="display: none;">{{ w['fb_link'] }}</span>
-                </div>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-      {% endif %}
-    </div>
-  </div>
-</div>
-<!-- /.container -->
-{% endblock content %}
-
-{% block scripts %}
-<!-- Slick CSS-->
-<script type="text/javascript" src="{{ url_for('static',filename='libraries/slick/slick.min.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static',filename='js/carousel.js') }}"></script>
-<script>
-  // function to show loading page
-  function viewHistory() {
-    let recommendations = document.getElementById("recommendations");
-    recommendations.style.display = "none";
-
-    let loading = document.getElementById("loading");
-    loading.style.display = "block";
-  }
-
-  if ({{ interaction_type | tojson | safe }}) {
-    // keeps rec_engine to be selected aftering submitting
-    document.getElementById('interaction-type').value = {{ interaction_type | tojson | safe }};
-  } else {
-    // gives empty div a height when there rec_engine is not defined
-    // so footer does not move up
-    document.getElementById('recommendations').style.height = '70vh';
-  }
-
-  // disable find workouts button at first
-  let view_history = document.getElementById('view_history')
-  let hidden_selection = document.getElementById('hidden_selection')
-  if (hidden_selection.selected == true) {
-    view_history.disabled = true;
-  }
-
-  // to enable submit button after selecting from rec engine
-  function enableSubmit() {
-    if (hidden_selection.selected == false) {
-      view_history.disabled = false;
-    }
-  }
-
-</script>
-{% endblock scripts %}
+{% block loadingMessage %}
+<h1 class="display-5" style="color:white;">Loading your history...</h1>
+{% endblock loadingMessage %}
