@@ -184,9 +184,6 @@ def recommendation_page():
         rec_dct[body_focus.replace(
             '_', ' ').capitalize().replace('b', 'B')] = results[~results['disliked']]
 
-    for i,k in rec_dct.items():
-        print(i)
-        print(k.iloc[:9])
     return render_template("recommendation_page.html", dropdown_option=rec_engine, rec_dct=rec_dct)
 
 
