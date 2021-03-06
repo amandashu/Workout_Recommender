@@ -1,10 +1,11 @@
 import pandas as pd
 
-def create_rec_lists(workouts, user, if_filter):
+def create_rec_lists(workouts, user, filter):
     """
     Takes in dataframe of workouts (with fbworkouts schema) and users series
     (with users schema) and returns a dictionary with body focus as keys and
     workout ids in lists, with workouts not matching users' preferences filtered out
+    if specified by filter parameter.
     """
     def training_type_helper(str):
         """
@@ -51,7 +52,7 @@ def create_rec_lists(workouts, user, if_filter):
             return True
         return False
 
-    if if_filter:
+    if filter:
         # filter
         workouts = workouts[workouts['duration'].apply(in_range_helper, args=('duration',))]
         workouts = workouts[workouts['difficulty'].apply(in_range_helper, args=('difficulty',))]

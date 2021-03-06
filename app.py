@@ -183,7 +183,10 @@ def recommendation_page():
 
         rec_dct[body_focus.replace(
             '_', ' ').capitalize().replace('b', 'B')] = results[~results['disliked']]
-    # print(rec_dct['Upper Body'])
+
+    for i,k in rec_dct.items():
+        print(i)
+        print(k.iloc[:9])
     return render_template("recommendation_page.html", dropdown_option=rec_engine, rec_dct=rec_dct)
 
 
@@ -213,8 +216,6 @@ def history_page():
         return redirect(url_for('login_page'))
 
     interaction_type = request.form.get("type")
-    # print(request.form.get("type"), request.form.get(
-    #     "interaction-type"), request.form)
 
     if interaction_type is None:
         return render_template("history_page.html", dropdown_option=None, rec_dct=None)
@@ -235,21 +236,16 @@ def history_page():
         user_interacted = all_user_interactions
     else:
         user_interacted = user_disliked_items
-    pred, scores = list(user_interacted['workout_id']), range(
-        len(user_interacted))
-
-    # dct for predictions to scores
-    pred_scores = {pred[i]: scores[i] for i in range(len(pred))}
 
     # get fbworkouts dataframe
     query = "SELECT * FROM fbworkouts"
     results = pd.read_sql_query(query, db.connection)
 
-    # dictionary with keys as body focus and values as filtered list of workouts
+    # dictionary with keys as body focus and values as list of liked/disliked workouts
     pred_dct = create_rec_lists(results, g.user, False)
 
     # dictionary with keys as body focus and values as dataframes with
-    # fb_workouts_meta schema and rows sorted by scores
+    # fb_workouts_meta schema
     rec_dct = {}
     for body_focus in pred_dct.keys():
         if len(user_interacted) == 0:
@@ -260,7 +256,6 @@ def history_page():
         query = "SELECT * FROM fbworkouts_meta WHERE workout_id IN (" + str(
             pred_dct[body_focus])[1:-1] + ") AND workout_id IN (" + str(list(user_interacted_index))[1:-1] + ")"
         results = pd.read_sql_query(query, db.connection)
-        results['score'] = 0
         results['liked'] = results['workout_id'].apply(
             lambda x: x in list(all_user_interactions['workout_id']))
         results['disliked'] = results['workout_id'].apply(
@@ -268,7 +263,7 @@ def history_page():
 
         rec_dct[body_focus.replace(
             '_', ' ').capitalize().replace('b', 'B')] = results
-    # print(rec_dct['Upper Body'])
+    
     return render_template("history_page.html", dropdown_option=interaction_type, rec_dct=rec_dct)
 
 

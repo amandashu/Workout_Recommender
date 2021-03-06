@@ -52,7 +52,7 @@
   <!-- Page Features -->
   <div class="container">
     <div id="loading" class="text-center" style="display:none;">
-      <img src="{{ url_for('static',filename='images/teodor.gif') }}" alt="loading gif" style="width:400px; heigh:auto;" />
+      <img src="{{ url_for('static',filename='images/teodor.gif') }}" alt="loading gif" style="width:400px; height:auto;" />
       {% block loadingMessage %}{% endblock %}
     </div>
     <div id="recommendations">
@@ -86,13 +86,15 @@
       <!-- div will be empty if no rec_engine/view_history is selected -->
       {% if dropdown_option %}
       {% for body_focus in rec_dct.keys() %}
+      {% set outer_index = loop.index %}
       {% set workouts = rec_dct[body_focus] %}
       <div id="{{ body_focus}}">
         <h2 class="display-4" style="color:white;">{{ body_focus}}</h2>
         <div class="container-fluid">
           <!-- Hidden by default, will become visible once Slick can reload the page-->
           <div class="row text-center carousel loaded" style="visibility: hidden;">
-          {% for i, w in workouts.iloc[:9].iterrows() %}
+          {% for _ , w in workouts.iloc[:9].iterrows() %}
+          {% set i = outer_index*9 + loop.index %} <!-- unique index per workout tile -->
             <div class="col-md-12 mb-4 workout-card">
               <div class="card h-100">
                 <img class="cropped-yt-thumb card-img-top" data-lazy="{{'https://img.youtube.com/vi/' + w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') + '/0.jpg'}}" alt="">
@@ -110,7 +112,7 @@
                   <p>
                     <a id="startWorkout-index-{{ i }}" workout_id="{{w['workout_id']}}" onclick='openPlayerOverlay("{{ i }}")' class="btn btn-primary">Start Workout!</a>
                     <!--Video Embed Driver Below ( these are hidden from view and referenced by overlay.js :) )-->
-                    <span id="video-index-{{ i }}" style="display: none;">{{'https://www.youtube-nocookie.com/embed/' +
+                    <span id="video-index-{{ i }}" style="display: none;">{{ 'https://www.youtube-nocookie.com/embed/' +
                       w['youtube_link'].replace('https://www.youtube.com/watch?v=', '').replace('=t','') }}</span>
                     <span id="fb-link-index-{{ i }}" style="display: none;">{{ w['fb_link'] }}</span>
                 </div>
