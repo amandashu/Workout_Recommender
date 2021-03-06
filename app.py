@@ -166,7 +166,7 @@ def recommendation_page():
     results = pd.read_sql_query(query, db.connection)
 
     # dictionary with keys as body focus and values as filtered list of workouts
-    pred_dct = create_rec_lists(results, g.user)
+    pred_dct = create_rec_lists(results, g.user, True)
 
     # dictionary with keys as body focus and values as dataframes with
     # fb_workouts_meta schema and rows sorted by scores
@@ -246,7 +246,7 @@ def history_page():
     results = pd.read_sql_query(query, db.connection)
 
     # dictionary with keys as body focus and values as filtered list of workouts
-    pred_dct = create_rec_lists(results, g.user)
+    pred_dct = create_rec_lists(results, g.user, False)
 
     # dictionary with keys as body focus and values as dataframes with
     # fb_workouts_meta schema and rows sorted by scores

@@ -1,6 +1,6 @@
 import pandas as pd
 
-def create_rec_lists(workouts, user):
+def create_rec_lists(workouts, user, if_filter):
     """
     Takes in dataframe of workouts (with fbworkouts schema) and users series
     (with users schema) and returns a dictionary with body focus as keys and
@@ -51,12 +51,13 @@ def create_rec_lists(workouts, user):
             return True
         return False
 
-    # filter
-    workouts = workouts[workouts['duration'].apply(in_range_helper, args=('duration',))]
-    workouts = workouts[workouts['difficulty'].apply(in_range_helper, args=('difficulty',))]
-    workouts = workouts[workouts['equipment'].apply(equipment_helper)]
-    workouts = workouts[workouts['training_type'].apply(training_type_helper)]
-    workouts = workouts[workouts.apply(calorie_helper,axis=1)]
+    if if_filter:
+        # filter
+        workouts = workouts[workouts['duration'].apply(in_range_helper, args=('duration',))]
+        workouts = workouts[workouts['difficulty'].apply(in_range_helper, args=('difficulty',))]
+        workouts = workouts[workouts['equipment'].apply(equipment_helper)]
+        workouts = workouts[workouts['training_type'].apply(training_type_helper)]
+        workouts = workouts[workouts.apply(calorie_helper,axis=1)]
 
     def get_body_focus(body_focus):
         """
