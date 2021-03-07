@@ -1,6 +1,6 @@
 ## Asnapp
 
-Asnapp is a workout video recommender web application.
+Asnapp is a workout video recommender web application. 
 
 Authors: Amanda Shu, Peter Peng, Najeem Kanishka
 
@@ -39,6 +39,8 @@ The data is scraped from https://www.fitnessblender.com/. We are using the data 
 **Testdata/raw**: These are fake datasets meant to be used with the test target.
 
 **Docker**: Docker related files. See [here](https://github.com/amandashu/Workout_Recommender/blob/main/docker/README_DOCKER.md)
+
+**Materials**: Contains pdfs for presentation slides and a report detailing our methods/implementations.
 
 ### Set Up Project Environment
 There are two ways to run this project: a) Docker (preferred) or b) Locally <br>
