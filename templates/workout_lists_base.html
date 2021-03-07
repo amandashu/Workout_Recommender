@@ -56,33 +56,6 @@
       {% block loadingMessage %}{% endblock %}
     </div>
     <div id="recommendations">
-      <div class="row justify-content-center">
-        <div class="col-6">
-          <p class="display-6" style="color: white; margin-bottom: 5px;">Show/Hide Body Focus Categories</p>
-          <div class="body-focus-selection btn-group btn-group-toggle" data-toggle="buttons">
-            <div class="btn btn-primary active toggle-btn" onclick='$("#Upper\\ Body").toggle()'>Upper Body</div>
-            <div class="btn btn-primary active toggle-btn" onclick='$("#Lower\\ Body").toggle()'>Lower Body</div>
-            <div class="btn btn-primary active toggle-btn" onclick='$("#Core").toggle()'>Core</div>
-            <div class="btn btn-primary active toggle-btn" onclick='$("#Total\\ Body").toggle()'>Total Body</div>
-          </div>
-        </div>
-        <div class="col-4">
-          <form>
-            <div class="form-group">
-              <label for="tile-size" style="color: white;" class="display-6">Number of Tiles to Display</label>
-              <select class="form-control" id="tile-size-selection" onChange="resizeCarousel(this.value);">
-                <option value="none" selected disabled hidden>Loading...</option>
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-              </select>
-            </div>
-          </form>
-        </div>
-      </div>
-
       <!-- div will be empty if no rec_engine/view_history is selected -->
       {% if dropdown_option %}
       {% for body_focus in rec_dct.keys() %}

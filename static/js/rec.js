@@ -1,3 +1,4 @@
+let settings_button = document.getElementById('settings-button')
 // function to show loading page
 function findWorkouts() {
   let recommendations = document.getElementById("recommendations");
@@ -5,6 +6,7 @@ function findWorkouts() {
 
   let loading = document.getElementById("loading");
   loading.style.display = "block";
+  settings_button.style.visibility = 'visible'
 }
 
 if (dropdown_option) {
@@ -21,11 +23,13 @@ let find_workouts = document.getElementById('find_workouts')
 let hidden_selection = document.getElementById('hidden_selection')
 if (hidden_selection.selected == true) {
   find_workouts.disabled = true;
+  settings_button.style.visibility = 'hidden'
 }
 
 // to enable submit button after selecting from dropdown
 function enableSubmit() {
   if (hidden_selection.selected == false) {
     find_workouts.disabled = false;
+
   }
 }
