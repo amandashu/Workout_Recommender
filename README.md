@@ -7,6 +7,9 @@ Authors: Amanda Shu, Peter Peng, Najeem Kanishka
 ### Website URL
 The website is now live on: https://workout-recommender.herokuapp.com/
 
+### Video Demonstration
+For a demonstration of the project, visit: https://www.youtube.com/watch?v=QJFg0HguGuI
+
 ### Data
 The data is scraped from https://www.fitnessblender.com/. We are using the data for academic purposes only.
 
