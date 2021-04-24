@@ -1,11 +1,11 @@
-## Asnapp
+## ASNAPP
 
-Asnapp is a workout video recommender web application. 
+ASNAPP is a workout video recommender web application. This project was completed as part of the UC San Diego DSC180B Capstone.
 
-Authors: Amanda Shu, Peter Peng, Najeem Kanishka
+Authors (sorted alphabetically by first name): Amanda Shu, Najeem Kanishka, Peter Peng
 
 ### Website URL
-The website is now live on: https://workout-recommender.herokuapp.com/
+The website is live on: https://workout-recommender.herokuapp.com/. The website may be slow on the first load, as it ramps up and down servers with demand. Additionally, you will need to create a login in order to access the website.
 
 ### Video Demonstration
 For a demonstration of the project, visit: https://www.youtube.com/watch?v=QJFg0HguGuI
@@ -50,8 +50,8 @@ There are two ways to run this project: a) Docker (preferred) or b) Locally <br>
 a) To Run in Docker:<br>
   1) Pull the container with `docker pull nkanishka/workout-recommender`
   2) Run the container using:
-  * General Use: `docker run -it -p 5000:5000 workout-recommender`
-  * DSMLP Only: `launch.sh -i nkanishka/workout_recommender_dsmlp -c 4 -m 8` <br><br>`kubectl port-forward <Kubernates Cluster Name> 5000`<br><br> `ssh -N -L 5000:127.0.0.1:5000 <AD Name>@dsmlp-login.ucsd.edu`
+  * General Use (most likely): `docker run -it -p 5000:5000 workout-recommender`
+  * UCSD DSMLP Servers Only (only for DSC180B students and faculty): `launch.sh -i nkanishka/workout_recommender_dsmlp -c 4 -m 8` <br><br>`kubectl port-forward <Kubernates Cluster Name> 5000`<br><br> `ssh -N -L 5000:127.0.0.1:5000 <AD Name>@dsmlp-login.ucsd.edu`
   3) Inside container/cluster, type `cd Workout_Recommender`. Note that in the DSMLP environment, you will need to manually clone this repo.
   4) If using website, go to [localhost:5000](localhost:5000)
     <br>
