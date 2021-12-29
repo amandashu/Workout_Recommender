@@ -4,11 +4,8 @@ ASNAPP is a workout video recommender web application. This project was complete
 
 Authors (sorted alphabetically by first name): Amanda Shu, Najeem Kanishka, Peter Peng
 
-### Website URL
-The website is live on: https://workout-recommender.herokuapp.com/. The website may be slow on the first load, as it ramps up and down servers with demand. Additionally, you will need to create a login in order to access the website.
-
 ### Video Demonstration
-For a demonstration of the project, visit: https://www.youtube.com/watch?v=QJFg0HguGuI
+The website is no longer live. Please see our video demonstration: https://www.youtube.com/watch?v=QJFg0HguGuI
 
 ### Data
 The data is scraped from https://www.fitnessblender.com/. We are using the data for academic purposes only.
